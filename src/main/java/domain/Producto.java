@@ -2,57 +2,56 @@ package domain;
 
 public class Producto {
 
-    private int id;
+    private String codigo;
     private String nombre;
     private double precio;
-    private String descripcion;
     private int existencia;
 
-    public Producto(int id, String nombre, double precio, String descripcion) {
-        if (nombre == null || nombre.trim().isEmpty()) {
-            throw new IllegalArgumentException("El nombre del producto no puede estar vacío");
-        }
-        if (precio <= 0) {
-            throw new IllegalArgumentException("El precio debe ser mayor que cero");
-        }
-        if (existencia < 0) {
-            throw new IllegalArgumentException("La existencia no puede ser negativa");
-        }
-
-        this.id = id;
-        this.nombre = nombre;
-        this.precio = precio;
-        this.descripcion = descripcion;
+    public Producto(String codigo, String nombre, double precio, int existencia) {
+        setCodigo(codigo);
+        setNombre(nombre);
+        setPrecio(precio);
+        setExistencia(existencia);
     }
 
-    public int getId() {
-        return id;
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        if (codigo == null || codigo.trim().isEmpty()) {
+            throw new IllegalArgumentException("El código no puede estar vacío");
+        }
+        this.codigo = codigo;
     }
 
     public String getNombre() {
         return nombre;
     }
 
+    public void setNombre(String nombre) {
+        if (nombre == null || nombre.trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre no puede estar vacío");
+        }
+        this.nombre = nombre;
+    }
+
     public double getPrecio() {
         return precio;
     }
 
-    public String getDescripcion() {
-        return descripcion;
+    public void setPrecio(double precio) {
+        if (precio < 0) {
+            throw new IllegalArgumentException("El precio no puede ser negativo");
+        }
+        this.precio = precio;
     }
 
     public int getExistencia() {
         return existencia;
     }
 
-    public void actualizarPrecio(double precio) {
-        if (precio <= 0) {
-            throw new IllegalArgumentException("El precio debe ser mayor que cero");
-        }
-        this.precio = precio;
-    }
-
-    public void actualizarExistencia(int existencia) {
+    public void setExistencia(int existencia) {
         if (existencia < 0) {
             throw new IllegalArgumentException("La existencia no puede ser negativa");
         }
