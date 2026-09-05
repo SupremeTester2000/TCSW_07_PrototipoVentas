@@ -32,6 +32,14 @@ class VentaTest {
     }
 
     @Test
+    void rechazaCantidadQueExcedeExistencias() {
+        Producto producto = new Producto("P006", "Tablet", 3000.0, 3);
+        Venta venta = new Venta();
+
+        assertThrows(IllegalArgumentException.class, () -> venta.agregarDetalle(producto, 10));
+    }
+
+    @Test
     void siLaInsercionFallaLaListaNoSeAltera() {
         Producto producto = new Producto("P004", "Monitor", 3500.0, 5);
         Venta venta = new Venta();

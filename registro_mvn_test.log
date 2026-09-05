@@ -1,0 +1,49 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------< com.example:prototipo_ventas >--------------------
+[INFO] Building prototipo_ventas 1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ prototipo_ventas ---
+[INFO] Deleting /Users/turkey/Documents/Tecnologías para la construcción de software/prototipo_ventas/target
+[INFO] 
+[INFO] --- resources:3.4.0:resources (default-resources) @ prototipo_ventas ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ prototipo_ventas ---
+[INFO] Recompiling the module because of changed source code.
+[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!
+[INFO] Compiling 3 source files with javac [debug target 11] to target/classes
+[INFO] 
+[INFO] --- resources:3.4.0:testResources (default-testResources) @ prototipo_ventas ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] skip non existing resourceDirectory /Users/turkey/Documents/Tecnologías para la construcción de software/prototipo_ventas/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ prototipo_ventas ---
+[INFO] Recompiling the module because of changed dependency.
+[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!
+[INFO] Compiling 2 source files with javac [debug target 11] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.4:test (default-test) @ prototipo_ventas ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running domain.ProductoTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.030 s -- in domain.ProductoTest
+[INFO] Running domain.VentaTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s -- in domain.VentaTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  1.298 s
+[INFO] Finished at: 2026-09-04T21:46:19-06:00
+[INFO] ------------------------------------------------------------------------

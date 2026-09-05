@@ -9,3 +9,17 @@
 **'DetalleVenta'**: Modela la línea de venta enlazada a un producto, asegurando que la cantidad solicitada no supere al stock disponible.
 
 **'Venta'**: Gestiona el conjunto de detalles de la transacción y calcula el monto total acumulado.
+
+## Ejecución
+
+Desde la raíz del proyecto:
+
+```bash
+mvn clean test
+```
+
+El proyecto fue comprobado con 9 pruebas automatizadas, todas obtuvieron un resultado exitoso.
+
+## Calidad
+
+Se sometió a una revisión de código con la herramienta SonarQube para el IDE Visual Studio Code.

@@ -9,13 +9,6 @@ public class Venta {
     private final List<DetalleVenta> detalles = new ArrayList<>();
 
     public void agregarDetalle(Producto producto, int cantidad) {
-        if (producto == null) {
-            throw new IllegalArgumentException("El producto no puede ser nulo");
-        }
-        if (cantidad <= 0) {
-            throw new IllegalArgumentException("La cantidad debe ser mayor que cero");
-        }
-
         DetalleVenta nuevoDetalle = new DetalleVenta(producto, cantidad);
         detalles.add(nuevoDetalle);
     }
@@ -25,6 +18,9 @@ public class Venta {
     }
 
     public double getTotal() {
+        if (detalles.isEmpty()) {
+            return 0.0;
+        }
         double total = 0.0;
         for (DetalleVenta detalle : detalles) {
             total += detalle.getSubtotal();
