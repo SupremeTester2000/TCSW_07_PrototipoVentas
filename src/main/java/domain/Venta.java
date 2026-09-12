@@ -1,5 +1,6 @@
 package domain;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,13 +18,13 @@ public class Venta {
         return Collections.unmodifiableList(detalles);
     }
 
-    public double getTotal() {
-        if (detalles.isEmpty()) {
-            return 0.0;
+    public BigDecimal getTotal() {
+        if (detalles.isEmpty()) {   
+            return BigDecimal.ZERO;
         }
-        double total = 0.0;
+        BigDecimal total = BigDecimal.ZERO;
         for (DetalleVenta detalle : detalles) {
-            total += detalle.getSubtotal();
+            total = total.add(detalle.getSubtotal());
         }
         return total;
     }

@@ -1,16 +1,18 @@
 package domain;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 /**
  * Objeto de Valor que representa una línea dentro de la venta.
  * Es inmutable y se valida contra las existencias del producto.
  */
+
 public final class DetalleVenta {
 
     private final Producto producto;
     private final int cantidad;
-    private final double precioCapturado;
+    private final BigDecimal precioCapturado;
 
     public DetalleVenta(Producto producto, int cantidad) {
         if (producto == null) {
@@ -36,12 +38,12 @@ public final class DetalleVenta {
         return cantidad;
     }
 
-    public double getPrecioCapturado() {
+    public BigDecimal getPrecioCapturado() {
         return precioCapturado;
     }
 
-    public double getSubtotal() {
-        return cantidad * precioCapturado;
+    public BigDecimal getSubtotal() {
+        return precioCapturado.multiply(BigDecimal.valueOf(cantidad));
     }
 
     @Override
@@ -50,7 +52,7 @@ public final class DetalleVenta {
         if (o == null || getClass() != o.getClass()) return false;
         DetalleVenta match = (DetalleVenta) o;
         return cantidad == match.cantidad 
-                && Double.compare(match.precioCapturado, precioCapturado) == 0 
+                && Objects.equals(precioCapturado, match.precioCapturado) 
                 && Objects.equals(producto, match.producto);
     }
 

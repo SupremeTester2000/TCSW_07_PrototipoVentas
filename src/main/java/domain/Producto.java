@@ -1,13 +1,15 @@
 package domain;
 
+import java.math.BigDecimal;
+
 public class Producto {
 
     private String codigo;
     private String nombre;
-    private double precio;
+    private BigDecimal precio;
     private int existencia;
 
-    public Producto(String codigo, String nombre, double precio, int existencia) {
+    public Producto(String codigo, String nombre, BigDecimal precio, int existencia) {
         setCodigo(codigo);
         setNombre(nombre);
         setPrecio(precio);
@@ -36,12 +38,12 @@ public class Producto {
         this.nombre = nombre;
     }
 
-    public double getPrecio() {
+    public BigDecimal getPrecio() {
         return precio;
     }
 
-    public void setPrecio(double precio) {
-        if (precio < 0) {
+    public void setPrecio(BigDecimal precio) {
+        if (precio.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("El precio no puede ser negativo");
         }
         this.precio = precio;

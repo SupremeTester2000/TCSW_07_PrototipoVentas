@@ -1,3 +1,4 @@
 domain/Venta.class
 domain/Producto.class
 domain/DetalleVenta.class
+com/Main.class
