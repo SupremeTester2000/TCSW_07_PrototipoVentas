@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ProductoTest {
 
     @Test
-    void testProductoCreacionValida() {
+    public void testProductoCreacionValida() {
         Producto producto = new Producto("P001", "Laptop", new BigDecimal("1200.00"), 10);
         
         assertEquals("P001", producto.getCodigo());
@@ -18,21 +18,21 @@ class ProductoTest {
     }
 
     @Test
-    void testRechazoPrecioNegativo() {
+    public void testRechazoPrecioNegativo() {
         BigDecimal precioNegativo = new BigDecimal("-50.00");
         
-        assertThrows(IlleglArgumentException.class, () -> new Producto("P002", "Mouse", precioNegativo, 5));
+        assertThrows(IllegalArgumentException.class, () -> new Producto("P002", "Mouse", precioNegativo, 5));
     }
 
     @Test
-    void testRechazoExistenciaNegativa() {
+    public void testRechazoExistenciaNegativa() {
         BigDecimal precioValido = new BigDecimal("100.00");
         
         assertThrows(IllegalArgumentException.class, () -> new Producto("P003", "Teclado", precioValido, -3));
     }
 
     @Test
-    void testProductoValoresLimitePermitidos() {
+    public void testProductoValoresLimitePermitidos() {
         Producto producto = new Producto("P000", "Muestra Gratis", BigDecimal.ZERO, 0);
         
         assertEquals(0, BigDecimal.ZERO.compareTo(producto.getPrecio()));
