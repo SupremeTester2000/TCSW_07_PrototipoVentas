@@ -43,10 +43,10 @@ public class Producto {
     }
 
     public void setPrecio(BigDecimal precio) {
-        if (precio.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("El precio no puede ser negativo");
-        }
-        this.precio = precio;
+    if (precio == null || precio.compareTo(BigDecimal.ZERO) < 0) {
+        throw new IllegalArgumentException("El precio no puede ser nulo o negativo");
+    }
+    this.precio = precio;
     }
 
     public int getExistencia() {

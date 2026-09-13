@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 class VentaTest {
 
     @Test
-    void agregaDetallesYCalculaTotalExacto() {
+    public void agregaDetallesYCalculaTotalExacto() {
         Producto producto1 = new Producto("P001", "Laptop", new BigDecimal("1200.00"), 10);
         Producto producto2 = new Producto("P002", "Mouse", new BigDecimal("250.00"), 5);
         Venta venta = new Venta();
@@ -25,7 +25,7 @@ class VentaTest {
     }
 
     @Test
-    void rechazaCantidadCeroOInvalida() {
+    public void rechazaCantidadCeroOInvalida() {
         Producto producto = new Producto("P003", "Teclado", new BigDecimal("400.00"), 5);
         Venta venta = new Venta();
 
@@ -34,7 +34,7 @@ class VentaTest {
     }
 
     @Test
-    void rechazaCantidadQueExcedeExistencias() {
+    public void rechazaCantidadQueExcedeExistencias() {
         Producto producto = new Producto("P006", "Tablet", new BigDecimal("3000.00"), 3);
         Venta venta = new Venta();
 
@@ -42,7 +42,7 @@ class VentaTest {
     }
 
     @Test
-    void siLaInsercionFallaLaListaNoSeAltera() {
+    public void siLaInsercionFallaLaListaNoSeAltera() {
         Producto producto = new Producto("P004", "Monitor", new BigDecimal("3500.00"), 5);
         Venta venta = new Venta();
         venta.agregarDetalle(producto, 1);
@@ -54,7 +54,7 @@ class VentaTest {
     }
 
     @Test
-    void precioHistoricoNoCambiaAlActualizarCatalogo() {
+    public void precioHistoricoNoCambiaAlActualizarCatalogo() {
         Producto producto = new Producto("P005", "Impresora", new BigDecimal("600.00"), 5);
         Venta venta = new Venta();
 
