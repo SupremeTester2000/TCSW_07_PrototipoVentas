@@ -1,9 +1,7 @@
 package domain;
 
 import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class ProductoTest {
@@ -21,7 +19,7 @@ class ProductoTest {
     void testRechazoPrecioNegativo() {
         BigDecimal precioNegativo = new BigDecimal("-50.00");
         
-        assertThrows(IlleglArgumentException.class, () -> new Producto("P002", "Mouse", precioNegativo, 5));
+        assertThrows(IllegalArgumentException.class, () -> new Producto("P002", "Mouse", precioNegativo, 5));
     }
 
     @Test

@@ -10,6 +10,13 @@ public class Venta {
     private final List<DetalleVenta> detalles = new ArrayList<>();
 
     public void agregarDetalle(Producto producto, int cantidad) {
+        if (cantidad <= 0) {
+            throw new IllegalArgumentException("La cantidad debe ser mayor a cero.");
+        }
+        if (cantidad > producto.getExistencia()) {
+            throw new IllegalArgumentException("La cantidad solicitada supera las existencias disponibles.");
+        }
+        
         DetalleVenta nuevoDetalle = new DetalleVenta(producto, cantidad);
         detalles.add(nuevoDetalle);
     }
