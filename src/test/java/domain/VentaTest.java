@@ -66,4 +66,20 @@ class VentaTest {
         assertEquals(0, new BigDecimal("1200.00").compareTo(detalle.getSubtotal()));
         assertEquals(0, new BigDecimal("1200.00").compareTo(venta.getTotal()));
     }
+    @Test
+    public void totalNoCambiaAlActualizarPreciosDeVariosProductos() {
+    Producto producto1 = new Producto("P007", "Monitor", new BigDecimal("3500.00"), 5);
+    Producto producto2 = new Producto("P008", "Teclado", new BigDecimal("400.00"), 5);
+    Venta venta = new Venta();
+
+    venta.agregarDetalle(producto1, 1);
+    venta.agregarDetalle(producto2, 2);
+
+    assertEquals(0, new BigDecimal("4300.00").compareTo(venta.getTotal()));
+
+    producto1.setPrecio(new BigDecimal("4500.00"));
+    producto2.setPrecio(new BigDecimal("600.00"));
+
+    assertEquals(0, new BigDecimal("4300.00").compareTo(venta.getTotal()));
+}
 }
