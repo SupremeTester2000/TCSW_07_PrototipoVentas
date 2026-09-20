@@ -1,4 +1,4 @@
-package domain;
+package com.example.domain.model;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -8,13 +8,13 @@ import java.util.Objects;
  * Es inmutable y se valida contra las existencias del producto.
  */
 
-public final class DetalleVenta {
+public final class SaleDetail {
 
-    private final Producto producto;
+    private final Product producto;
     private final int cantidad;
     private final BigDecimal precioCapturado;
 
-    public DetalleVenta(Producto producto, int cantidad) {
+    public SaleDetail(Product producto, int cantidad) {
         if (producto == null) {
             throw new IllegalArgumentException("El producto no puede ser nulo.");
         }
@@ -30,7 +30,7 @@ public final class DetalleVenta {
         this.precioCapturado = producto.getPrecio();
     }
 
-    public Producto getProducto() {
+    public Product getProducto() {
         return producto;
     }
 
@@ -50,9 +50,9 @@ public final class DetalleVenta {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DetalleVenta match = (DetalleVenta) o;
-        return cantidad == match.cantidad 
-                && Objects.equals(precioCapturado, match.precioCapturado) 
+        SaleDetail match = (SaleDetail) o;
+        return cantidad == match.cantidad
+                && Objects.equals(precioCapturado, match.precioCapturado)
                 && Objects.equals(producto, match.producto);
     }
 

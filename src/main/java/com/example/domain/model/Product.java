@@ -1,15 +1,15 @@
-package domain;
+package com.example.domain.model;
 
 import java.math.BigDecimal;
 
-public class Producto {
+public class Product {
 
     private String codigo;
     private String nombre;
     private BigDecimal precio;
     private int existencia;
 
-    public Producto(String codigo, String nombre, BigDecimal precio, int existencia) {
+    public Product(String codigo, String nombre, BigDecimal precio, int existencia) {
         setCodigo(codigo);
         setNombre(nombre);
         setPrecio(precio);
