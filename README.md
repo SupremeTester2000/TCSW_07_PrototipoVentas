@@ -29,3 +29,7 @@ El proyecto fue comprobado con 9 pruebas automatizadas, todas obtuvieron un resu
 ## Calidad
 
 Se sometió a una revisión de código con la herramienta SonarQube para el IDE Visual Studio Code.
+
+---
+# Diagramas de clases del proyecto - Implementación de arquitectura hexagonal
+<img width="1600" height="1119" alt="image" src="https://github.com/user-attachments/assets/4ee72933-7313-4fce-aa67-d2d89fca0e6d" />

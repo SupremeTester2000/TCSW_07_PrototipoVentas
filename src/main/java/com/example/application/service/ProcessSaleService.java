@@ -23,6 +23,32 @@ public class ProcessSaleService implements ProcessSaleUseCase {
         this.saleRepositoryPort = saleRepositoryPort;
     }
 
+    public void registrarProducto(Product product) {
+        productRepositoryPort.save(product);
+    }
+
+    public Sale crearVenta(Map<String, Integer> productos) {
+        if (productos == null) {
+            throw new IllegalArgumentException(
+                    "Los productos de la venta no pueden ser nulos");
+        }
+
+        Sale sale = new Sale();
+
+        for (Map.Entry<String, Integer> item : productos.entrySet()) {
+            Product product = productRepositoryPort.findByCodigo(item.getKey())
+                    .orElseThrow(() -> new ProductNotFound(item.getKey()));
+
+            sale.agregarDetalle(product, item.getValue());
+        }
+
+        return sale;
+    }
+
+    public void confirmarVenta(Sale sale) {
+        saleRepositoryPort.save(sale);
+    }
+
     @Override
     public Sale processSale(Map<String, Integer> productosSolicitados) {
 
