@@ -1,5 +1,11 @@
 package com.example.ports.outbound;
 
-public class ProductRepositoryPort {
-    
+import com.example.domain.model.Product;
+import java.util.Optional;
+
+public interface ProductRepositoryPort {
+
+    Optional<Product> findByCodigo(String codigo);
+
+    void save(Product product);
 }
