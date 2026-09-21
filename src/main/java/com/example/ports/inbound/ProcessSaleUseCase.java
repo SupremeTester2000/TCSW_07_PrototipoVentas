@@ -1,5 +1,14 @@
 package com.example.ports.inbound;
 
+<<<<<<< HEAD
+import com.example.domain.model.Sale;
+import java.util.Map;
+
+public interface ProcessSaleUseCase {
+
+    Sale processSale(Map<String, Integer> productosSolicitados);
+}
+=======
 import java.util.Map;
 
 import com.example.domain.model.Product;
@@ -13,3 +22,4 @@ public interface ProcessSaleUseCase {
 
 	void confirmarVenta(Sale sale);
 }
+>>>>>>> origin/main

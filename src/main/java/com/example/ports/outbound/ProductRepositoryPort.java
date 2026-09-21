@@ -1,5 +1,16 @@
 package com.example.ports.outbound;
 
+<<<<<<< HEAD
+import com.example.domain.model.Product;
+import java.util.Optional;
+
+public interface ProductRepositoryPort {
+
+    Optional<Product> findByCodigo(String codigo);
+
+    void save(Product product);
+}
+=======
 import java.util.List;
 import java.util.Optional;
 
@@ -13,3 +24,4 @@ public interface ProductRepositoryPort {
 
 	List<Product> findAll();
 }
+>>>>>>> origin/main
