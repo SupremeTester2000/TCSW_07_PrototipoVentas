@@ -291,6 +291,11 @@ class ProcessSaleServiceTest {
         public void save(Product product) {
             products.put(product.getCodigo(), product);
         }
+
+        @Override
+        public List<Product> findAll() {
+            return new ArrayList<>(products.values());
+        }
     }
 
     private static class InMemorySaleRepositoryFake
@@ -302,6 +307,11 @@ class ProcessSaleServiceTest {
         @Override
         public void save(Sale sale) {
             sales.add(sale);
+        }
+
+        @Override
+        public List<Sale> findAll() {
+            return new ArrayList<>(sales);
         }
     }
 }
