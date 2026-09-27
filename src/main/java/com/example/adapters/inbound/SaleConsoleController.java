@@ -2,27 +2,34 @@ package com.example.adapters.inbound;
 
 import java.util.Map;
 
+import com.example.application.facade.SaleFacade;
 import com.example.domain.model.Product;
 import com.example.domain.model.Sale;
-import com.example.ports.inbound.ProcessSaleUseCase;
 
 public class SaleConsoleController {
 
-	private final ProcessSaleUseCase processSaleUseCase;
+    private final SaleFacade saleFacade;
 
-	public SaleConsoleController(ProcessSaleUseCase processSaleUseCase) {
-		this.processSaleUseCase = processSaleUseCase;
-	}
+    public SaleConsoleController(SaleFacade saleFacade) {
+        if (saleFacade == null) {
+            throw new IllegalArgumentException("La fachada no puede ser nula.");
+        }
+        this.saleFacade = saleFacade;
+    }
 
-	public void registrarProducto(Product product) {
-		processSaleUseCase.registrarProducto(product);
-	}
+    public void registrarProducto(Product product) {
+        saleFacade.registrarProducto(product);
+    }
 
-	public Sale crearVenta(Map<String, Integer> productos) {
-		return processSaleUseCase.crearVenta(productos);
-	}
+    public Sale crearVenta(Map<String, Integer> productos) {
+        return saleFacade.procesarVenta(productos);
+    }
 
-	public void confirmarVenta(Sale sale) {
-		processSaleUseCase.confirmarVenta(sale);
-	}
+    public Sale procesarVenta(Map<String, Integer> productos) {
+        return saleFacade.procesarVenta(productos);
+    }
+
+    public void confirmarVenta(Sale sale) {
+        saleFacade.confirmarVenta(sale);
+    }
 }
