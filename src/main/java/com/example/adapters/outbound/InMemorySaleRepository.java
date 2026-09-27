@@ -18,7 +18,6 @@ public class InMemorySaleRepository implements SaleRepositoryPort {
 		sales.add(sale);
 	}
 
-	@Override
 	public List<Sale> findAll() {
 		return new ArrayList<>(sales);
 	}

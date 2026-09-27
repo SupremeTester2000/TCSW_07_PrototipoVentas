@@ -309,9 +309,5 @@ class ProcessSaleServiceTest {
             sales.add(sale);
         }
 
-        @Override
-        public List<Sale> findAll() {
-            return new ArrayList<>(sales);
-        }
     }
 }

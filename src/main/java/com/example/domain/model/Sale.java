@@ -40,9 +40,19 @@ public class Sale {
         if (detalles.size() >= ConfiguracionVentasSingleton.getInstance().getMaximumSaleDetails()) {
             throw new IllegalArgumentException("La venta supera el límite de detalles configurado.");
         }
-        
+
         SaleDetail nuevoDetalle = new SaleDetail(producto, cantidad);
         detalles.add(nuevoDetalle);
+    }
+
+    public void agregarDetalle(SaleDetail detalle) {
+        if (detalle == null) {
+            throw new IllegalArgumentException("El detalle de venta no puede ser nulo.");
+        }
+        if (detalles.size() >= ConfiguracionVentasSingleton.getInstance().getMaximumSaleDetails()) {
+            throw new IllegalArgumentException("La venta supera el límite de detalles configurado.");
+        }
+        detalles.add(detalle);
     }
 
     public List<SaleDetail> getDetalles() {
