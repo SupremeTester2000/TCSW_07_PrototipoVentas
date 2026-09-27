@@ -14,7 +14,7 @@ import com.example.domain.model.SaleDetail;
 class SaleTest {
 
     @Test
-    public void agregaDetallesYCalculaTotalExacto() {
+    void agregaDetallesYCalculaTotalExacto() {
         Product product1 = new Product("P001", "Laptop", new BigDecimal("1200.00"), 10);
         Product product2 = new Product("P002", "Mouse", new BigDecimal("250.00"), 5);
         Sale sale = new Sale();
@@ -25,11 +25,12 @@ class SaleTest {
         assertEquals(2, sale.getDetalles().size());
         assertEquals(0, new BigDecimal("2400.00").compareTo(sale.getDetalles().get(0).getSubtotal()));
         assertEquals(0, new BigDecimal("750.00").compareTo(sale.getDetalles().get(1).getSubtotal()));
-        assertEquals(0, new BigDecimal("3150.00").compareTo(sale.getTotal()));
+        assertEquals(0, new BigDecimal("3150.00").compareTo(sale.getSubtotal()));
+        assertEquals(0, new BigDecimal("3654.00").compareTo(sale.getTotal()));
     }
 
     @Test
-    public void rechazaCantidadCeroOInvalida() {
+    void rechazaCantidadCeroOInvalida() {
         Product product = new Product("P003", "Teclado", new BigDecimal("400.00"), 5);
         Sale sale = new Sale();
 
@@ -38,7 +39,7 @@ class SaleTest {
     }
 
     @Test
-    public void rechazaCantidadQueExcedeExistencias() {
+    void rechazaCantidadQueExcedeExistencias() {
         Product product = new Product("P006", "Tablet", new BigDecimal("3000.00"), 3);
         Sale sale = new Sale();
 
@@ -46,7 +47,7 @@ class SaleTest {
     }
 
     @Test
-    public void siLaInsercionFallaLaListaNoSeAltera() {
+    void siLaInsercionFallaLaListaNoSeAltera() {
         Product product = new Product("P004", "Monitor", new BigDecimal("3500.00"), 5);
         Sale sale = new Sale();
         sale.agregarDetalle(product, 1);
@@ -54,11 +55,12 @@ class SaleTest {
         assertThrows(IllegalArgumentException.class, () -> sale.agregarDetalle(product, 0));
 
         assertEquals(1, sale.getDetalles().size());
-        assertEquals(0, new BigDecimal("3500.00").compareTo(sale.getTotal()));
+        assertEquals(0, new BigDecimal("3500.00").compareTo(sale.getSubtotal()));
+        assertEquals(0, new BigDecimal("4060.00").compareTo(sale.getTotal()));
     }
 
     @Test
-    public void precioHistoricoNoCambiaAlActualizarCatalogo() {
+    void precioHistoricoNoCambiaAlActualizarCatalogo() {
         Product product = new Product("P005", "Impresora", new BigDecimal("600.00"), 5);
         Sale sale = new Sale();
 
@@ -68,11 +70,12 @@ class SaleTest {
         product.setPrecio(new BigDecimal("900.00"));
 
         assertEquals(0, new BigDecimal("1200.00").compareTo(detail.getSubtotal()));
-        assertEquals(0, new BigDecimal("1200.00").compareTo(sale.getTotal()));
+        assertEquals(0, new BigDecimal("1200.00").compareTo(sale.getSubtotal()));
+        assertEquals(0, new BigDecimal("1392.00").compareTo(sale.getTotal()));
     }
 
     @Test
-    public void totalNoCambiaAlActualizarPreciosDeVariosProductos() {
+    void totalNoCambiaAlActualizarPreciosDeVariosProductos() {
         Product product1 = new Product("P007", "Monitor", new BigDecimal("3500.00"), 5);
         Product product2 = new Product("P008", "Teclado", new BigDecimal("400.00"), 5);
         Sale sale = new Sale();
@@ -80,11 +83,13 @@ class SaleTest {
         sale.agregarDetalle(product1, 1);
         sale.agregarDetalle(product2, 2);
 
-        assertEquals(0, new BigDecimal("4300.00").compareTo(sale.getTotal()));
+        assertEquals(0, new BigDecimal("4300.00").compareTo(sale.getSubtotal()));
+        assertEquals(0, new BigDecimal("4988.00").compareTo(sale.getTotal()));
 
         product1.setPrecio(new BigDecimal("4500.00"));
         product2.setPrecio(new BigDecimal("600.00"));
 
-        assertEquals(0, new BigDecimal("4300.00").compareTo(sale.getTotal()));
+        assertEquals(0, new BigDecimal("4300.00").compareTo(sale.getSubtotal()));
+        assertEquals(0, new BigDecimal("4988.00").compareTo(sale.getTotal()));
     }
 }

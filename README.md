@@ -4,27 +4,18 @@
 **Apache Maven:** 3.9.16
 
 ## Estructura del Dominio
-**Producto**: Representa un artículo a añadirse al sistema, se implementó un encampsulamiento para que su código y nombre no puedan estar   vacíos.
+**Product** representa un artículo; **SaleDetail** captura el precio histórico y cantidad; **Sale** calcula subtotal, descuento, IVA y total final delegando las políticas a estrategias.
 
-**DetalleVenta**: Modela la línea de venta enlazada a un producto, asegurando que la cantidad solicitada no supere al stock disponible.
-
-**Venta**: Gestiona el conjunto de detalles de la transacción y calcula el monto total acumulado.
+Las políticas clásicas de descuento (`DiscountPercent` y `FixedDiscount`) implementan `DiscountStrategy`. También se ofrece la alternativa funcional `FunctionalDiscountPolicies`, que produce `Function<Sale, BigDecimal>`. La tasa de IVA, moneda base, límite de detalles y descuento máximo se administran mediante `ConfiguracionVentasSingleton`.
 
 ## Ejecución
 
-La suite de pruebas para el módulo de ventas asegura la integridad del dominio comprobando escenarios clave.
-
-1) Cálculos Financieros Exactos.
-2) Validación de Reglas de Cantidad.
-3) Integridad y Consistencia del Estado.
-4) Inmutabilidad de Precios Históricos.
-
-Desde la raíz del proyecto ejecutar el siguiente comando:
+Ejecuta la suite desde la raíz del proyecto:
 ```bash
 mvn clean test
 ```
 
-El proyecto fue comprobado con 9 pruebas automatizadas, todas obtuvieron un resultado exitoso.
+La comparación de enfoques y el análisis crítico del Singleton están en [docs/analisis-patrones-ventas.md](docs/analisis-patrones-ventas.md).
 
 ## Calidad
 

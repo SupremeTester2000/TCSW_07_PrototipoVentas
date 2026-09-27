@@ -1,26 +1,50 @@
 package com.example.application.service;
 
 import com.example.domain.exception.ProductNotFound;
+import com.example.domain.strategy.FixedDiscount;
+import com.example.domain.strategy.TaxStrategy;
+import com.example.domain.strategy.VatTaxStrategy;
 import com.example.domain.model.Product;
 import com.example.domain.model.Sale;
 import com.example.ports.inbound.ProcessSaleUseCase;
 import com.example.ports.outbound.ProductRepositoryPort;
 import com.example.ports.outbound.SaleRepositoryPort;
 
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
 
 public class ProcessSaleService implements ProcessSaleUseCase {
 
     private final ProductRepositoryPort productRepositoryPort;
     private final SaleRepositoryPort saleRepositoryPort;
+    private final Function<Sale, BigDecimal> discountPolicy;
+    private final TaxStrategy taxStrategy;
 
     public ProcessSaleService(
             ProductRepositoryPort productRepositoryPort,
             SaleRepositoryPort saleRepositoryPort) {
 
-        this.productRepositoryPort = productRepositoryPort;
-        this.saleRepositoryPort = saleRepositoryPort;
+            this(productRepositoryPort, saleRepositoryPort,
+                new FixedDiscount(BigDecimal.ZERO), new VatTaxStrategy());
+            }
+
+            public ProcessSaleService(
+                ProductRepositoryPort productRepositoryPort,
+                SaleRepositoryPort saleRepositoryPort,
+                Function<Sale, BigDecimal> discountPolicy,
+                TaxStrategy taxStrategy) {
+
+            this.productRepositoryPort = Objects.requireNonNull(productRepositoryPort,
+                "El repositorio de productos es obligatorio.");
+            this.saleRepositoryPort = Objects.requireNonNull(saleRepositoryPort,
+                "El repositorio de ventas es obligatorio.");
+            this.discountPolicy = Objects.requireNonNull(discountPolicy,
+                "La política de descuento es obligatoria.");
+            this.taxStrategy = Objects.requireNonNull(taxStrategy,
+                "La estrategia de impuesto es obligatoria.");
     }
 
     public void registrarProducto(Product product) {
@@ -33,7 +57,7 @@ public class ProcessSaleService implements ProcessSaleUseCase {
                     "Los productos de la venta no pueden ser nulos");
         }
 
-        Sale sale = new Sale();
+        Sale sale = new Sale(discountPolicy, taxStrategy);
 
         for (Map.Entry<String, Integer> item : productos.entrySet()) {
             Product product = productRepositoryPort.findByCodigo(item.getKey())
@@ -57,7 +81,7 @@ public class ProcessSaleService implements ProcessSaleUseCase {
                     "La venta debe contener al menos un producto.");
         }
 
-        Sale sale = new Sale();
+        Sale sale = new Sale(discountPolicy, taxStrategy);
 
         Map<String, Product> productosEncontrados = new LinkedHashMap<>();
 
