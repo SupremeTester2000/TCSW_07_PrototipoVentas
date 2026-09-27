@@ -10,15 +10,25 @@ public class Sale {
     private final List<SaleDetail> detalles = new ArrayList<>();
 
     public void agregarDetalle(Product producto, int cantidad) {
+        if (producto == null) {
+            throw new IllegalArgumentException("El producto no puede ser nulo.");
+        }
         if (cantidad <= 0) {
             throw new IllegalArgumentException("La cantidad debe ser mayor a cero.");
         }
         if (cantidad > producto.getExistencia()) {
             throw new IllegalArgumentException("La cantidad solicitada supera las existencias disponibles.");
         }
-        
+
         SaleDetail nuevoDetalle = new SaleDetail(producto, cantidad);
         detalles.add(nuevoDetalle);
+    }
+
+    public void agregarDetalle(SaleDetail detalle) {
+        if (detalle == null) {
+            throw new IllegalArgumentException("El detalle de venta no puede ser nulo.");
+        }
+        detalles.add(detalle);
     }
 
     public List<SaleDetail> getDetalles() {
@@ -26,7 +36,7 @@ public class Sale {
     }
 
     public BigDecimal getTotal() {
-        if (detalles.isEmpty()) {   
+        if (detalles.isEmpty()) {
             return BigDecimal.ZERO;
         }
         BigDecimal total = BigDecimal.ZERO;
