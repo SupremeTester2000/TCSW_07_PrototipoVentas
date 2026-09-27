@@ -40,7 +40,7 @@ public class DefaultSaleFactory implements SaleFactory {
             sale.agregarDetalle(detail);
         }
 
-        if (sale.getTotal().compareTo(totalCalculado) != 0) {
+        if (sale.getSubtotal().compareTo(totalCalculado) != 0) {
             throw new IllegalStateException(
                     "El total de la venta no coincide con la suma de subtotales.");
         }

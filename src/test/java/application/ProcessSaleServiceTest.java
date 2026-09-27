@@ -51,7 +51,7 @@ class ProcessSaleServiceTest {
 
         assertEquals(
                 0,
-                new BigDecimal("2400.00").compareTo(sale.getTotal()));
+                new BigDecimal("2784.00").compareTo(sale.getTotal()));
     }
 
     @Test
@@ -91,7 +91,7 @@ class ProcessSaleServiceTest {
 
         assertEquals(
                 0,
-                new BigDecimal("3150.00").compareTo(sale.getTotal()));
+                new BigDecimal("3654.00").compareTo(sale.getTotal()));
     }
 
     @Test
@@ -267,7 +267,7 @@ class ProcessSaleServiceTest {
 
         assertEquals(
                 0,
-                new BigDecimal("4300.00").compareTo(sale.getTotal()));
+                new BigDecimal("4988.00").compareTo(sale.getTotal()));
 
         assertEquals(1, saleRepository.sales.size());
 
@@ -309,9 +309,5 @@ class ProcessSaleServiceTest {
             sales.add(sale);
         }
 
-        @Override
-        public List<Sale> findAll() {
-            return new ArrayList<>(sales);
-        }
     }
 }

@@ -69,7 +69,8 @@ class SaleFactoryTest {
 
         assertNotNull(sale);
         assertEquals(1, sale.getDetalles().size());
-        assertEquals(0, new BigDecimal("2400.00").compareTo(sale.getTotal()));
+        assertEquals(0, new BigDecimal("2400.00").compareTo(sale.getSubtotal()));
+        assertEquals(0, new BigDecimal("2784.00").compareTo(sale.getTotal()));
     }
 
     @Test
@@ -83,7 +84,8 @@ class SaleFactoryTest {
         ));
 
         assertEquals(2, sale.getDetalles().size());
-        assertEquals(0, new BigDecimal("3150.00").compareTo(sale.getTotal()));
+        assertEquals(0, new BigDecimal("3150.00").compareTo(sale.getSubtotal()));
+        assertEquals(0, new BigDecimal("3654.00").compareTo(sale.getTotal()));
     }
 
     @Test
@@ -114,6 +116,6 @@ class SaleFactoryTest {
         Sale sale = factory.createSale(List.of(laptopDetail, mouseDetail));
 
         BigDecimal subtotalTotal = laptopDetail.getSubtotal().add(mouseDetail.getSubtotal());
-        assertEquals(0, subtotalTotal.compareTo(sale.getTotal()));
+        assertEquals(0, subtotalTotal.compareTo(sale.getSubtotal()));
     }
 }
