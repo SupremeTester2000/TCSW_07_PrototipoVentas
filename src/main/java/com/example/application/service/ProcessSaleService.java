@@ -30,12 +30,17 @@ public class ProcessSaleService implements ProcessSaleUseCase {
     private final Function<Sale, BigDecimal> discountPolicy;
     private final TaxStrategy taxStrategy;
 
-    public ProcessSaleService(ProductRepositoryPort productRepositoryPort, SaleRepositoryPort saleRepositoryPort) {
+    public ProcessSaleService(
+            ProductRepositoryPort productRepositoryPort,
+            SaleRepositoryPort saleRepositoryPort) {
         this(productRepositoryPort, saleRepositoryPort, new DefaultSaleFactory(),
                 new FixedDiscount(BigDecimal.ZERO), new VatTaxStrategy());
     }
 
-    public ProcessSaleService(ProductRepositoryPort productRepositoryPort, SaleRepositoryPort saleRepositoryPort, SaleFactory saleFactory) {
+    public ProcessSaleService(
+            ProductRepositoryPort productRepositoryPort,
+            SaleRepositoryPort saleRepositoryPort,
+            SaleFactory saleFactory) {
         this(productRepositoryPort, saleRepositoryPort, saleFactory,
                 new FixedDiscount(BigDecimal.ZERO), new VatTaxStrategy());
     }
@@ -45,7 +50,8 @@ public class ProcessSaleService implements ProcessSaleUseCase {
             SaleRepositoryPort saleRepositoryPort,
             Function<Sale, BigDecimal> discountPolicy,
             TaxStrategy taxStrategy) {
-        this(productRepositoryPort, saleRepositoryPort, new DefaultSaleFactory(), discountPolicy, taxStrategy);
+        this(productRepositoryPort, saleRepositoryPort, new DefaultSaleFactory(),
+                discountPolicy, taxStrategy);
     }
 
     public ProcessSaleService(
@@ -54,15 +60,20 @@ public class ProcessSaleService implements ProcessSaleUseCase {
             SaleFactory saleFactory,
             Function<Sale, BigDecimal> discountPolicy,
             TaxStrategy taxStrategy) {
-        this.productRepositoryPort = Objects.requireNonNull(productRepositoryPort,
+        this.productRepositoryPort = Objects.requireNonNull(
+                productRepositoryPort,
                 "El repositorio de productos es obligatorio.");
-        this.saleRepositoryPort = Objects.requireNonNull(saleRepositoryPort,
+        this.saleRepositoryPort = Objects.requireNonNull(
+                saleRepositoryPort,
                 "El repositorio de ventas es obligatorio.");
-        this.saleFactory = Objects.requireNonNull(saleFactory,
+        this.saleFactory = Objects.requireNonNull(
+                saleFactory,
                 "La fábrica de ventas es obligatoria.");
-        this.discountPolicy = Objects.requireNonNull(discountPolicy,
+        this.discountPolicy = Objects.requireNonNull(
+                discountPolicy,
                 "La política de descuento es obligatoria.");
-        this.taxStrategy = Objects.requireNonNull(taxStrategy,
+        this.taxStrategy = Objects.requireNonNull(
+                taxStrategy,
                 "La estrategia de impuesto es obligatoria.");
     }
 
@@ -81,43 +92,50 @@ public class ProcessSaleService implements ProcessSaleUseCase {
     @Override
     public Sale processSale(Map<String, Integer> productosSolicitados) {
         Map<String, Product> productosEncontrados = new LinkedHashMap<>();
+
         Sale sale = buildSale(productosSolicitados, productosEncontrados);
 
-        for (Map.Entry<String, Integer> entry : productosSolicitados.entrySet()) {
-            String codigo = entry.getKey();
-            int cantidad = entry.getValue();
-            Product product = productosEncontrados.get(codigo);
-            product.setExistencia(product.getExistencia() - cantidad);
-            productRepositoryPort.save(product);
-        }
-
         saleRepositoryPort.save(sale);
+
         return sale;
     }
 
-    private Sale buildSale(Map<String, Integer> products, Map<String, Product> foundProducts) {
+    private Sale buildSale(
+            Map<String, Integer> products,
+            Map<String, Product> foundProducts) {
+
         if (products == null || products.isEmpty()) {
-            throw new IllegalArgumentException("La venta debe contener al menos un producto.");
+            throw new IllegalArgumentException(
+                    "La venta debe contener al menos un producto.");
         }
 
         List<SaleDetail> details = new ArrayList<>();
+
         for (Map.Entry<String, Integer> entry : products.entrySet()) {
             Integer quantity = entry.getValue();
+
             if (quantity == null || quantity <= 0) {
-                throw new IllegalArgumentException("La cantidad debe ser mayor a cero.");
+                throw new IllegalArgumentException(
+                        "La cantidad debe ser mayor a cero.");
             }
 
             String code = entry.getKey();
+
             Product product = productRepositoryPort.findByCodigo(code)
                     .orElseThrow(() -> new ProductNotFound(code));
+
             if (quantity > product.getExistencia()) {
-                throw new IllegalArgumentException("La cantidad solicitada supera las existencias disponibles.");
+                throw new IllegalArgumentException(
+                        "La cantidad solicitada supera las existencias disponibles.");
             }
 
             details.add(saleFactory.createSaleDetail(product, quantity));
             foundProducts.put(code, product);
         }
 
-        return saleFactory.createSale(details, discountPolicy, taxStrategy);
+        return saleFactory.createSale(
+                details,
+                discountPolicy,
+                taxStrategy);
     }
 }
