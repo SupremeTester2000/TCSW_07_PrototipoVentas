@@ -1,9 +1,12 @@
 package application;
 
+import com.example.application.facade.SaleFacade;
+import com.example.application.observer.ActualizadorStock;
 import com.example.application.service.ProcessSaleService;
 import com.example.domain.exception.ProductNotFound;
 import com.example.domain.model.Product;
 import com.example.domain.model.Sale;
+import com.example.domain.observer.EmisorVentaConfirmada;
 import com.example.ports.outbound.ProductRepositoryPort;
 import com.example.ports.outbound.SaleRepositoryPort;
 
@@ -220,10 +223,25 @@ class ProcessSaleServiceTest {
         ProcessSaleService service =
                 new ProcessSaleService(productRepository, saleRepository);
 
-        Map<String, Integer> requestedProducts = new LinkedHashMap<>();
+        EmisorVentaConfirmada emisor =
+                new EmisorVentaConfirmada();
+
+        ActualizadorStock actualizador =
+                new ActualizadorStock(productRepository);
+
+        emisor.registrarObservador(actualizador);
+
+        SaleFacade facade =
+                new SaleFacade(
+                        service,
+                        emisor);
+
+        Map<String, Integer> requestedProducts =
+                new LinkedHashMap<>();
+
         requestedProducts.put("P001", 3);
 
-        service.processSale(requestedProducts);
+        facade.procesarVenta(requestedProducts);
 
         assertEquals(5, product.getExistencia());
 
@@ -267,8 +285,7 @@ class ProcessSaleServiceTest {
 
         assertEquals(
                 0,
-                new BigDecimal("4988.00").compareTo(sale.getTotal()));
-
+		new BigDecimal("4988.00").compareTo(sale.getTotal()));
         assertEquals(1, saleRepository.sales.size());
 
         assertSame(
@@ -308,6 +325,5 @@ class ProcessSaleServiceTest {
         public void save(Sale sale) {
             sales.add(sale);
         }
-
     }
 }
