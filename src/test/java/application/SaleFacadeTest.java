@@ -2,6 +2,7 @@ package application;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
@@ -12,10 +13,38 @@ import org.junit.jupiter.api.Test;
 import com.example.application.facade.SaleFacade;
 import com.example.domain.model.Product;
 import com.example.domain.model.Sale;
-import com.example.domain.observer.SaleConfirmedPublisher;
 import com.example.ports.inbound.ProcessSaleUseCase;
+import com.example.ports.inbound.SaleFacadePort;
 
 class SaleFacadeTest {
+
+    @Test
+    void facade_implements_a_port_for_the_presentation_layer() {
+        ProcessSaleUseCase useCase = new ProcessSaleUseCase() {
+            @Override
+            public void registerProduct(Product product) {
+                // Intentionally empty for this test.
+            }
+
+            @Override
+            public Sale createSale(Map<String, Integer> products) {
+                return new Sale();
+            }
+
+            @Override
+            public void confirmSale(Sale sale) {
+                // Intentionally empty for this test.
+            }
+
+            @Override
+            public Sale processSale(Map<String, Integer> requestedProducts) {
+                return new Sale();
+            }
+        };
+
+        SaleFacadePort facade = new SaleFacade(useCase);
+        assertTrue(facade instanceof SaleFacade);
+    }
 
     @Test
     void delegateSaleProcessingCorrectly() {
@@ -33,6 +62,7 @@ class SaleFacadeTest {
         ProcessSaleUseCase useCase = new ProcessSaleUseCase() {
             @Override
             public void registerProduct(Product product) {
+                // Intentionally empty for this test.
             }
 
             @Override
@@ -42,6 +72,7 @@ class SaleFacadeTest {
 
             @Override
             public void confirmSale(Sale sale) {
+                // Intentionally empty for this test.
             }
 
             @Override
@@ -57,19 +88,20 @@ class SaleFacadeTest {
         Map<String, Integer> request = new LinkedHashMap<>();
         request.put("P001", 1);
 
-        Sale result = facade.processAndNotifySale(request);
+        Sale result = facade.processSale(request);
 
         assertSame(expectedSale, result);
         assertSame(1, captured.get("P001"));
     }
 
     @Test
-    void delegateProcessSaleToProcessAndNotifySale() {
+    void processSale_should_return_the_sale_from_the_use_case() {
         Sale expectedSale = new Sale();
 
         ProcessSaleUseCase useCase = new ProcessSaleUseCase() {
             @Override
             public void registerProduct(Product product) {
+                // Intentionally empty for this test.
             }
 
             @Override
@@ -79,6 +111,7 @@ class SaleFacadeTest {
 
             @Override
             public void confirmSale(Sale sale) {
+                // Intentionally empty for this test.
             }
 
             @Override
@@ -121,6 +154,7 @@ class SaleFacadeTest {
 
             @Override
             public void confirmSale(Sale sale) {
+                // Intentionally empty for this test.
             }
 
             @Override
@@ -146,6 +180,7 @@ class SaleFacadeTest {
         ProcessSaleUseCase useCase = new ProcessSaleUseCase() {
             @Override
             public void registerProduct(Product product) {
+                // Intentionally empty for this test.
             }
 
             @Override
@@ -184,6 +219,7 @@ class SaleFacadeTest {
         ProcessSaleUseCase useCase = new ProcessSaleUseCase() {
             @Override
             public void registerProduct(Product product) {
+                // Intentionally empty for this test.
             }
 
             @Override
@@ -193,6 +229,7 @@ class SaleFacadeTest {
 
             @Override
             public void confirmSale(Sale sale) {
+                // Intentionally empty for this test.
             }
 
             @Override

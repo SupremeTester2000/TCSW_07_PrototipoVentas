@@ -62,7 +62,7 @@ class SaleFacadeObserverTest {
 
         products.put("P001", 2);
 
-        Sale sale = facade.processAndNotifySale(products);
+        Sale sale = facade.processSale(products);
 
         assertEquals(1, sale.getDetails().size());
         assertEquals(

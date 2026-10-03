@@ -241,7 +241,7 @@ class ProcessSaleServiceTest {
 
         requestedProducts.put("P001", 3);
 
-        facade.processAndNotifySale(requestedProducts);
+        facade.processSale(requestedProducts);
 
         assertEquals(5, product.getStock());
 

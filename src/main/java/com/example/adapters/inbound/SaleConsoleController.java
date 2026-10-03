@@ -2,15 +2,15 @@ package com.example.adapters.inbound;
 
 import java.util.Map;
 
-import com.example.application.facade.SaleFacade;
 import com.example.domain.model.Product;
 import com.example.domain.model.Sale;
+import com.example.ports.inbound.SaleFacadePort;
 
 public class SaleConsoleController {
 
-    private final SaleFacade saleFacade;
+    private final SaleFacadePort saleFacade;
 
-    public SaleConsoleController(SaleFacade saleFacade) {
+    public SaleConsoleController(SaleFacadePort saleFacade) {
         if (saleFacade == null) {
             throw new IllegalArgumentException("La fachada no puede ser nula.");
         }
@@ -22,11 +22,7 @@ public class SaleConsoleController {
     }
 
     public Sale createSale(Map<String, Integer> products) {
-        return saleFacade.processAndNotifySale(products);
-    }
-
-    public Sale processAndNotifySale(Map<String, Integer> products) {
-        return saleFacade.processAndNotifySale(products);
+        return saleFacade.processSale(products);
     }
 
     public void confirmSale(Sale sale) {

@@ -6,8 +6,9 @@ import com.example.domain.model.Product;
 import com.example.domain.model.Sale;
 import com.example.domain.observer.SaleConfirmedPublisher;
 import com.example.ports.inbound.ProcessSaleUseCase;
+import com.example.ports.inbound.SaleFacadePort;
 
-public class SaleFacade {
+public class SaleFacade implements SaleFacadePort {
 
     private final ProcessSaleUseCase processSaleUseCase;
     private final SaleConfirmedPublisher saleConfirmedPublisher;
@@ -34,16 +35,13 @@ public class SaleFacade {
         this.saleConfirmedPublisher = saleConfirmedPublisher;
     }
 
-    public Sale processAndNotifySale(Map<String, Integer> products) {
+    @Override
+    public Sale processSale(Map<String, Integer> products) {
         Sale sale = processSaleUseCase.processSale(products);
 
         saleConfirmedPublisher.publishSaleConfirmed(sale);
 
         return sale;
-    }
-
-    public Sale processSale(Map<String, Integer> products) {
-        return processAndNotifySale(products);
     }
 
     public void registerProduct(Product product) {
