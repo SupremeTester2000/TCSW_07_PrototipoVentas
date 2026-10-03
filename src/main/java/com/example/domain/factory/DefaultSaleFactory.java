@@ -18,29 +18,29 @@ public class DefaultSaleFactory implements SaleFactory {
             throw new IllegalArgumentException("La venta debe contener al menos un detalle.");
         }
 
-        BigDecimal totalCalculado = BigDecimal.ZERO;
+        BigDecimal calculatedTotal = BigDecimal.ZERO;
         Sale sale = new Sale();
 
         for (SaleDetail detail : details) {
             if (detail == null) {
                 throw new IllegalArgumentException("El detalle de venta no puede ser nulo.");
             }
-            if (detail.getCantidad() <= 0) {
+            if (detail.getQuantity() <= 0) {
                 throw new IllegalArgumentException("La cantidad debe ser mayor a cero.");
             }
-            if (detail.getProducto() == null) {
+            if (detail.getProduct() == null) {
                 throw new IllegalArgumentException("El producto asociado al detalle no puede ser nulo.");
             }
-            if (detail.getPrecioCapturado() == null ||
-                    detail.getPrecioCapturado().compareTo(BigDecimal.ZERO) <= 0) {
+            if (detail.getCapturedPrice() == null ||
+                    detail.getCapturedPrice().compareTo(BigDecimal.ZERO) <= 0) {
                 throw new IllegalArgumentException("El precio capturado debe ser mayor a cero.");
             }
 
-            totalCalculado = totalCalculado.add(detail.getSubtotal());
-            sale.agregarDetalle(detail);
+            calculatedTotal = calculatedTotal.add(detail.getSubtotal());
+            sale.addDetail(detail);
         }
 
-        if (sale.getSubtotal().compareTo(totalCalculado) != 0) {
+        if (sale.getSubtotal().compareTo(calculatedTotal) != 0) {
             throw new IllegalStateException(
                     "El total de la venta no coincide con la suma de subtotales.");
         }
@@ -49,17 +49,17 @@ public class DefaultSaleFactory implements SaleFactory {
     }
 
     @Override
-    public SaleDetail createSaleDetail(Product producto, int cantidad) {
-        if (producto == null) {
+    public SaleDetail createSaleDetail(Product product, int quantity) {
+        if (product == null) {
             throw new IllegalArgumentException("El producto no puede ser nulo.");
         }
-        if (cantidad <= 0) {
+        if (quantity <= 0) {
             throw new IllegalArgumentException("La cantidad debe ser mayor a cero.");
         }
-        if (producto.getPrecio() == null ||
-                producto.getPrecio().compareTo(BigDecimal.ZERO) <= 0) {
+        if (product.getPrice() == null ||
+                product.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("El precio del producto debe ser mayor a cero.");
         }
-        return new SaleDetail(producto, cantidad);
+        return new SaleDetail(product, quantity);
     }
 }

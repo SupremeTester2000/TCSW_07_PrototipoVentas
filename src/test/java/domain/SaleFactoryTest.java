@@ -20,61 +20,61 @@ class SaleFactoryTest {
     private final DefaultSaleFactory factory = new DefaultSaleFactory();
 
     @Test
-    void crearDetalleValido() {
+    void createValidDetail() {
         Product product = new Product("P001", "Laptop", new BigDecimal("1200.00"), 10);
 
         SaleDetail detail = factory.createSaleDetail(product, 2);
 
         assertNotNull(detail);
-        assertEquals(product, detail.getProducto());
-        assertEquals(2, detail.getCantidad());
+        assertEquals(product, detail.getProduct());
+        assertEquals(2, detail.getQuantity());
         assertEquals(0, new BigDecimal("2400.00").compareTo(detail.getSubtotal()));
     }
 
     @Test
-    void rechazaProductoNulo() {
+    void rejectNullProduct() {
         assertThrows(IllegalArgumentException.class, () -> factory.createSaleDetail(null, 1));
     }
 
     @Test
-    void rechazaCantidadCero() {
+    void rejectZeroQuantity() {
         Product product = new Product("P001", "Laptop", new BigDecimal("1200.00"), 10);
         assertThrows(IllegalArgumentException.class, () -> factory.createSaleDetail(product, 0));
     }
 
     @Test
-    void rechazaCantidadNegativa() {
+    void rejectNegativeQuantity() {
         Product product = new Product("P001", "Laptop", new BigDecimal("1200.00"), 10);
         assertThrows(IllegalArgumentException.class, () -> factory.createSaleDetail(product, -1));
     }
 
     @Test
-    void rechazaPrecioCero() {
+    void rejectZeroPrice() {
         Product product = new Product("P001", "Laptop", BigDecimal.ZERO, 10);
         assertThrows(IllegalArgumentException.class, () -> factory.createSaleDetail(product, 1));
     }
 
     @Test
-    void rechazaPrecioNegativo() {
+    void rejectNegativePrice() {
         assertThrows(IllegalArgumentException.class,
                 () -> new Product("P001", "Laptop", new BigDecimal("-10.00"), 10));
     }
 
     @Test
-    void crearVentaConUnDetalleValido() {
+    void createSaleWithOneValidDetail() {
         Product product = new Product("P001", "Laptop", new BigDecimal("1200.00"), 10);
         SaleDetail detail = factory.createSaleDetail(product, 2);
 
         Sale sale = factory.createSale(List.of(detail));
 
         assertNotNull(sale);
-        assertEquals(1, sale.getDetalles().size());
+        assertEquals(1, sale.getDetails().size());
         assertEquals(0, new BigDecimal("2400.00").compareTo(sale.getSubtotal()));
         assertEquals(0, new BigDecimal("2784.00").compareTo(sale.getTotal()));
     }
 
     @Test
-    void crearVentaConVariosDetallesValidos() {
+    void createSaleWithMultipleValidDetails() {
         Product laptop = new Product("P001", "Laptop", new BigDecimal("1200.00"), 10);
         Product mouse = new Product("P002", "Mouse", new BigDecimal("250.00"), 10);
 
@@ -83,23 +83,23 @@ class SaleFactoryTest {
                 factory.createSaleDetail(mouse, 3)
         ));
 
-        assertEquals(2, sale.getDetalles().size());
+        assertEquals(2, sale.getDetails().size());
         assertEquals(0, new BigDecimal("3150.00").compareTo(sale.getSubtotal()));
         assertEquals(0, new BigDecimal("3654.00").compareTo(sale.getTotal()));
     }
 
     @Test
-    void rechazaListaDeDetallesNula() {
+    void rejectNullDetailList() {
         assertThrows(IllegalArgumentException.class, () -> factory.createSale(null));
     }
 
     @Test
-    void rechazaListaDeDetallesVacia() {
+    void rejectEmptyDetailList() {
         assertThrows(IllegalArgumentException.class, () -> factory.createSale(new ArrayList<>()));
     }
 
     @Test
-    void rechazaDetalleNulo() {
+    void rejectNullDetail() {
         List<SaleDetail> details = new ArrayList<>();
         details.add(null);
 
@@ -107,7 +107,7 @@ class SaleFactoryTest {
     }
 
     @Test
-    void totalCoincideConSumaDeSubtotales() {
+    void verifyTotalMatchesSumOfSubtotals() {
         Product laptop = new Product("P001", "Laptop", new BigDecimal("1200.00"), 10);
         Product mouse = new Product("P002", "Mouse", new BigDecimal("250.00"), 10);
 
@@ -115,7 +115,7 @@ class SaleFactoryTest {
         SaleDetail mouseDetail = factory.createSaleDetail(mouse, 3);
         Sale sale = factory.createSale(List.of(laptopDetail, mouseDetail));
 
-        BigDecimal subtotalTotal = laptopDetail.getSubtotal().add(mouseDetail.getSubtotal());
-        assertEquals(0, subtotalTotal.compareTo(sale.getSubtotal()));
+        BigDecimal combinedSubtotal = laptopDetail.getSubtotal().add(mouseDetail.getSubtotal());
+        assertEquals(0, combinedSubtotal.compareTo(sale.getSubtotal()));
     }
 }

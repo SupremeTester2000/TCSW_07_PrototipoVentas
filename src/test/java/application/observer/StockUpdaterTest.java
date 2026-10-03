@@ -13,14 +13,14 @@ import org.junit.jupiter.api.Test;
 
 import com.example.domain.model.Product;
 import com.example.domain.model.Sale;
-import com.example.application.observer.ActualizadorStock;
-import com.example.domain.observer.VentaConfirmada;
+import com.example.application.observer.StockUpdater;
+import com.example.domain.observer.SaleConfirmed;
 import com.example.ports.outbound.ProductRepositoryPort;
 
-class ActualizadorStockTest {
+class StockUpdaterTest {
 
     @Test
-    void actualizaExistenciaAlRecibirVentaConfirmada() {
+    void updateStockOnSaleConfirmed() {
         Product product = new Product(
                 "P001",
                 "Laptop",
@@ -33,15 +33,15 @@ class ActualizadorStockTest {
         repository.save(product);
 
         Sale sale = new Sale();
-        sale.agregarDetalle(product, 3);
+        sale.addDetail(product, 3);
 
-        ActualizadorStock actualizador =
-                new ActualizadorStock(repository);
+        StockUpdater stockUpdater =
+                new StockUpdater(repository);
 
-        actualizador.actualizar(new VentaConfirmada(sale));
+        stockUpdater.update(new SaleConfirmed(sale));
 
-        assertEquals(7, product.getExistencia());
-        assertEquals(7, repository.products.get("P001").getExistencia());
+        assertEquals(7, product.getStock());
+        assertEquals(7, repository.products.get("P001").getStock());
     }
 
     private static class InMemoryProductRepositoryFake
@@ -52,12 +52,12 @@ class ActualizadorStockTest {
 
         @Override
         public void save(Product product) {
-            products.put(product.getCodigo(), product);
+            products.put(product.getCode(), product);
         }
 
         @Override
-        public Optional<Product> findByCodigo(String codigo) {
-            return Optional.ofNullable(products.get(codigo));
+        public Optional<Product> findByCode(String code) {
+            return Optional.ofNullable(products.get(code));
         }
 
         @Override

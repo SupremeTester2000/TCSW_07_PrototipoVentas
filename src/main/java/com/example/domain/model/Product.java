@@ -4,59 +4,59 @@ import java.math.BigDecimal;
 
 public class Product {
 
-    private String codigo;
-    private String nombre;
-    private BigDecimal precio;
-    private int existencia;
+    private String code;
+    private String name;
+    private BigDecimal price;
+    private int stock;
 
-    public Product(String codigo, String nombre, BigDecimal precio, int existencia) {
-        setCodigo(codigo);
-        setNombre(nombre);
-        setPrecio(precio);
-        setExistencia(existencia);
+    public Product(String code, String name, BigDecimal price, int stock) {
+        setCode(code);
+        setName(name);
+        setPrice(price);
+        setStock(stock);
     }
 
-    public String getCodigo() {
-        return codigo;
+    public String getCode() {
+        return code;
     }
 
-    public void setCodigo(String codigo) {
-        if (codigo == null || codigo.trim().isEmpty()) {
+    public void setCode(String code) {
+        if (code == null || code.trim().isEmpty()) {
             throw new IllegalArgumentException("El código no puede estar vacío");
         }
-        this.codigo = codigo;
+        this.code = code;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getName() {
+        return name;
     }
 
-    public void setNombre(String nombre) {
-        if (nombre == null || nombre.trim().isEmpty()) {
+    public void setName(String name) {
+        if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre no puede estar vacío");
         }
-        this.nombre = nombre;
+        this.name = name;
     }
 
-    public BigDecimal getPrecio() {
-        return precio;
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    public void setPrecio(BigDecimal precio) {
-    if (precio == null || precio.compareTo(BigDecimal.ZERO) < 0) {
+    public void setPrice(BigDecimal price) {
+    if (price == null || price.compareTo(BigDecimal.ZERO) < 0) {
         throw new IllegalArgumentException("El precio no puede ser nulo o negativo");
     }
-    this.precio = precio;
+    this.price = price;
     }
 
-    public int getExistencia() {
-        return existencia;
+    public int getStock() {
+        return stock;
     }
 
-    public void setExistencia(int existencia) {
-        if (existencia < 0) {
+    public void setStock(int stock) {
+        if (stock < 0) {
             throw new IllegalArgumentException("La existencia no puede ser negativa");
         }
-        this.existencia = existencia;
+        this.stock = stock;
     }
 }

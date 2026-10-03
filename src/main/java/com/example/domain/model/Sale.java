@@ -7,14 +7,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-import com.example.config.ConfiguracionVentasSingleton;
+import com.example.config.SalesConfigurationSingleton;
 import com.example.domain.strategy.FixedDiscount;
 import com.example.domain.strategy.TaxStrategy;
 import com.example.domain.strategy.VatTaxStrategy;
 
 public class Sale {
 
-    private final List<SaleDetail> detalles = new ArrayList<>();
+    private final List<SaleDetail> details = new ArrayList<>();
     private final Function<Sale, BigDecimal> discountPolicy;
     private final TaxStrategy taxStrategy;
 
@@ -27,42 +27,42 @@ public class Sale {
         this.taxStrategy = Objects.requireNonNull(taxStrategy, "La estrategia de impuesto es obligatoria.");
     }
 
-    public void agregarDetalle(Product producto, int cantidad) {
-        if (producto == null) {
+    public void addDetail(Product product, int quantity) {
+        if (product == null) {
             throw new IllegalArgumentException("El producto no puede ser nulo.");
         }
-        if (cantidad <= 0) {
+        if (quantity <= 0) {
             throw new IllegalArgumentException("La cantidad debe ser mayor a cero.");
         }
-        if (cantidad > producto.getExistencia()) {
+        if (quantity > product.getStock()) {
             throw new IllegalArgumentException("La cantidad solicitada supera las existencias disponibles.");
         }
-        if (detalles.size() >= ConfiguracionVentasSingleton.getInstance().getMaximumSaleDetails()) {
+        if (details.size() >= SalesConfigurationSingleton.getInstance().getMaximumSaleDetails()) {
             throw new IllegalArgumentException("La venta supera el límite de detalles configurado.");
         }
 
-        SaleDetail nuevoDetalle = new SaleDetail(producto, cantidad);
-        detalles.add(nuevoDetalle);
+        SaleDetail newDetail = new SaleDetail(product, quantity);
+        details.add(newDetail);
     }
 
-    public void agregarDetalle(SaleDetail detalle) {
-        if (detalle == null) {
+    public void addDetail(SaleDetail detail) {
+        if (detail == null) {
             throw new IllegalArgumentException("El detalle de venta no puede ser nulo.");
         }
-        if (detalles.size() >= ConfiguracionVentasSingleton.getInstance().getMaximumSaleDetails()) {
+        if (details.size() >= SalesConfigurationSingleton.getInstance().getMaximumSaleDetails()) {
             throw new IllegalArgumentException("La venta supera el límite de detalles configurado.");
         }
-        detalles.add(detalle);
+        details.add(detail);
     }
 
-    public List<SaleDetail> getDetalles() {
-        return Collections.unmodifiableList(detalles);
+    public List<SaleDetail> getDetails() {
+        return Collections.unmodifiableList(details);
     }
 
     public BigDecimal getSubtotal() {
         BigDecimal total = BigDecimal.ZERO;
-        for (SaleDetail detalle : detalles) {
-            total = total.add(detalle.getSubtotal());
+        for (SaleDetail detail : details) {
+            total = total.add(detail.getSubtotal());
         }
         return total;
     }

@@ -1,12 +1,12 @@
 package application;
 
 import com.example.application.facade.SaleFacade;
-import com.example.application.observer.ActualizadorStock;
+import com.example.application.observer.StockUpdater;
 import com.example.application.service.ProcessSaleService;
 import com.example.domain.exception.ProductNotFound;
 import com.example.domain.model.Product;
 import com.example.domain.model.Sale;
-import com.example.domain.observer.EmisorVentaConfirmada;
+import com.example.domain.observer.SaleConfirmedPublisher;
 import com.example.ports.outbound.ProductRepositoryPort;
 import com.example.ports.outbound.SaleRepositoryPort;
 
@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 class ProcessSaleServiceTest {
 
     @Test
-    void procesaVentaConUnProducto() {
+    void processSaleWithOneProduct() {
 
         InMemoryProductRepositoryFake productRepository =
                 new InMemoryProductRepositoryFake();
@@ -50,7 +50,7 @@ class ProcessSaleServiceTest {
 
         Sale sale = service.processSale(requestedProducts);
 
-        assertEquals(1, sale.getDetalles().size());
+        assertEquals(1, sale.getDetails().size());
 
         assertEquals(
                 0,
@@ -58,7 +58,7 @@ class ProcessSaleServiceTest {
     }
 
     @Test
-    void procesaVentaConVariosProductos() {
+    void processSaleWithMultipleProducts() {
 
         InMemoryProductRepositoryFake productRepository =
                 new InMemoryProductRepositoryFake();
@@ -90,7 +90,7 @@ class ProcessSaleServiceTest {
 
         Sale sale = service.processSale(requestedProducts);
 
-        assertEquals(2, sale.getDetalles().size());
+        assertEquals(2, sale.getDetails().size());
 
         assertEquals(
                 0,
@@ -98,7 +98,7 @@ class ProcessSaleServiceTest {
     }
 
     @Test
-    void productoInexistenteLanzaProductNotFound() {
+    void throwProductNotFoundForMissingProduct() {
 
         InMemoryProductRepositoryFake productRepository =
                 new InMemoryProductRepositoryFake();
@@ -118,7 +118,7 @@ class ProcessSaleServiceTest {
     }
 
     @Test
-    void cantidadCeroEsRechazada() {
+    void rejectZeroQuantity() {
 
         InMemoryProductRepositoryFake productRepository =
                 new InMemoryProductRepositoryFake();
@@ -146,7 +146,7 @@ class ProcessSaleServiceTest {
     }
 
     @Test
-    void cantidadNegativaEsRechazada() {
+    void rejectNegativeQuantity() {
 
         InMemoryProductRepositoryFake productRepository =
                 new InMemoryProductRepositoryFake();
@@ -174,7 +174,7 @@ class ProcessSaleServiceTest {
     }
 
     @Test
-    void inventarioInsuficienteEsRechazado() {
+    void rejectInsufficientStock() {
 
         InMemoryProductRepositoryFake productRepository =
                 new InMemoryProductRepositoryFake();
@@ -200,11 +200,11 @@ class ProcessSaleServiceTest {
                 IllegalArgumentException.class,
                 () -> service.processSale(requestedProducts));
 
-        assertEquals(3, product.getExistencia());
+        assertEquals(3, product.getStock());
     }
 
     @Test
-    void actualizaExistenciaDespuesDeLaVenta() {
+    void updateStockAfterSale() {
 
         InMemoryProductRepositoryFake productRepository =
                 new InMemoryProductRepositoryFake();
@@ -223,27 +223,27 @@ class ProcessSaleServiceTest {
         ProcessSaleService service =
                 new ProcessSaleService(productRepository, saleRepository);
 
-        EmisorVentaConfirmada emisor =
-                new EmisorVentaConfirmada();
+        SaleConfirmedPublisher publisher =
+                new SaleConfirmedPublisher();
 
-        ActualizadorStock actualizador =
-                new ActualizadorStock(productRepository);
+        StockUpdater stockUpdater =
+                new StockUpdater(productRepository);
 
-        emisor.registrarObservador(actualizador);
+        publisher.registerObserver(stockUpdater);
 
         SaleFacade facade =
                 new SaleFacade(
                         service,
-                        emisor);
+                        publisher);
 
         Map<String, Integer> requestedProducts =
                 new LinkedHashMap<>();
 
         requestedProducts.put("P001", 3);
 
-        facade.procesarVenta(requestedProducts);
+        facade.processAndNotifySale(requestedProducts);
 
-        assertEquals(5, product.getExistencia());
+        assertEquals(5, product.getStock());
 
         assertSame(
                 product,
@@ -251,7 +251,7 @@ class ProcessSaleServiceTest {
     }
 
     @Test
-    void guardaLaVentaYCalculaElTotal() {
+    void saveSaleAndCalculateTotal() {
 
         InMemoryProductRepositoryFake productRepository =
                 new InMemoryProductRepositoryFake();
@@ -300,13 +300,13 @@ class ProcessSaleServiceTest {
                 new LinkedHashMap<>();
 
         @Override
-        public Optional<Product> findByCodigo(String codigo) {
-            return Optional.ofNullable(products.get(codigo));
+        public Optional<Product> findByCode(String code) {
+            return Optional.ofNullable(products.get(code));
         }
 
         @Override
         public void save(Product product) {
-            products.put(product.getCodigo(), product);
+            products.put(product.getCode(), product);
         }
 
         @Override

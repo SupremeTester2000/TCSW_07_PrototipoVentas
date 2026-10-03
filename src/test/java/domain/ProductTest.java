@@ -12,33 +12,33 @@ import com.example.domain.model.Product;
 class ProductTest {
 
     @Test
-    void testProductoCreacionValida() {
+    void testValidProductCreation() {
         Product product = new Product("P001", "Laptop", new BigDecimal("1200.00"), 10);
 
-        assertEquals("P001", product.getCodigo());
-        assertEquals("Laptop", product.getNombre());
-        assertEquals(0, new BigDecimal("1200.00").compareTo(product.getPrecio()));
+        assertEquals("P001", product.getCode());
+        assertEquals("Laptop", product.getName());
+        assertEquals(0, new BigDecimal("1200.00").compareTo(product.getPrice()));
     }
 
     @Test
-    void testRechazoPrecioNegativo() {
-        BigDecimal precioNegativo = new BigDecimal("-50.00");
+    void testRejectNegativePrice() {
+        BigDecimal negativePrice = new BigDecimal("-50.00");
 
-        assertThrows(IllegalArgumentException.class, () -> new Product("P002", "Mouse", precioNegativo, 5));
+        assertThrows(IllegalArgumentException.class, () -> new Product("P002", "Mouse", negativePrice, 5));
     }
 
     @Test
-    void testRechazoExistenciaNegativa() {
-        BigDecimal precioValido = new BigDecimal("100.00");
+    void testRejectNegativeStock() {
+        BigDecimal validPrice = new BigDecimal("100.00");
 
-        assertThrows(IllegalArgumentException.class, () -> new Product("P003", "Teclado", precioValido, -3));
+        assertThrows(IllegalArgumentException.class, () -> new Product("P003", "Teclado", validPrice, -3));
     }
 
     @Test
-    void testProductoValoresLimitePermitidos() {
+    void testAllowProductBoundaryValues() {
         Product product = new Product("P000", "Muestra Gratis", BigDecimal.ZERO, 0);
 
-        assertEquals(0, BigDecimal.ZERO.compareTo(product.getPrecio()));
-        assertEquals(0, product.getExistencia());
+        assertEquals(0, BigDecimal.ZERO.compareTo(product.getPrice()));
+        assertEquals(0, product.getStock());
     }
 }

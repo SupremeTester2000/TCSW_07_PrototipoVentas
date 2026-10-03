@@ -18,12 +18,12 @@ public class InMemoryProductRepository implements ProductRepositoryPort {
 		if (product == null) {
 			throw new IllegalArgumentException("El producto no puede ser nulo");
 		}
-		products.put(product.getCodigo(), product);
+		products.put(product.getCode(), product);
 	}
 
 	@Override
-	public Optional<Product> findByCodigo(String codigo) {
-		return Optional.ofNullable(products.get(codigo));
+	public Optional<Product> findByCode(String code) {
+		return Optional.ofNullable(products.get(code));
 	}
 
 	@Override

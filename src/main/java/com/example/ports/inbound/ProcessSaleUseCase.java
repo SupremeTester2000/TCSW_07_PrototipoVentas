@@ -7,11 +7,11 @@ import com.example.domain.model.Sale;
 
 public interface ProcessSaleUseCase {
 
-    void registrarProducto(Product product);
+    void registerProduct(Product product);
 
-    Sale crearVenta(Map<String, Integer> productos);
+    Sale createSale(Map<String, Integer> products);
 
-    void confirmarVenta(Sale sale);
+    void confirmSale(Sale sale);
 
-    Sale processSale(Map<String, Integer> productosSolicitados);
+    Sale processSale(Map<String, Integer> requestedProducts);
 }

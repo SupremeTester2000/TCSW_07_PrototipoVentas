@@ -4,53 +4,53 @@ import java.util.Map;
 
 import com.example.domain.model.Product;
 import com.example.domain.model.Sale;
-import com.example.domain.observer.EmisorVentaConfirmada;
+import com.example.domain.observer.SaleConfirmedPublisher;
 import com.example.ports.inbound.ProcessSaleUseCase;
 
 public class SaleFacade {
 
     private final ProcessSaleUseCase processSaleUseCase;
-    private final EmisorVentaConfirmada emisorVentaConfirmada;
+    private final SaleConfirmedPublisher saleConfirmedPublisher;
 
     public SaleFacade(ProcessSaleUseCase processSaleUseCase) {
-        this(processSaleUseCase, new EmisorVentaConfirmada());
+        this(processSaleUseCase, new SaleConfirmedPublisher());
     }
 
     public SaleFacade(
             ProcessSaleUseCase processSaleUseCase,
-            EmisorVentaConfirmada emisorVentaConfirmada) {
+            SaleConfirmedPublisher saleConfirmedPublisher) {
 
         if (processSaleUseCase == null) {
             throw new IllegalArgumentException(
                     "El caso de uso no puede ser nulo.");
         }
 
-        if (emisorVentaConfirmada == null) {
+        if (saleConfirmedPublisher == null) {
             throw new IllegalArgumentException(
                     "El emisor de venta confirmada no puede ser nulo.");
         }
 
         this.processSaleUseCase = processSaleUseCase;
-        this.emisorVentaConfirmada = emisorVentaConfirmada;
+        this.saleConfirmedPublisher = saleConfirmedPublisher;
     }
 
-    public Sale procesarVenta(Map<String, Integer> productos) {
-        Sale sale = processSaleUseCase.processSale(productos);
+    public Sale processAndNotifySale(Map<String, Integer> products) {
+        Sale sale = processSaleUseCase.processSale(products);
 
-        emisorVentaConfirmada.notificarVentaConfirmada(sale);
+        saleConfirmedPublisher.publishSaleConfirmed(sale);
 
         return sale;
     }
 
-    public Sale processSale(Map<String, Integer> productos) {
-        return procesarVenta(productos);
+    public Sale processSale(Map<String, Integer> products) {
+        return processAndNotifySale(products);
     }
 
-    public void registrarProducto(Product product) {
-        processSaleUseCase.registrarProducto(product);
+    public void registerProduct(Product product) {
+        processSaleUseCase.registerProduct(product);
     }
 
-    public void confirmarVenta(Sale sale) {
-        processSaleUseCase.confirmarVenta(sale);
+    public void confirmSale(Sale sale) {
+        processSaleUseCase.confirmSale(sale);
     }
 }

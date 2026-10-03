@@ -4,37 +4,37 @@ import java.util.Objects;
 
 import com.example.domain.model.Product;
 import com.example.domain.model.SaleDetail;
-import com.example.domain.observer.ObservadorVenta;
-import com.example.domain.observer.VentaConfirmada;
+import com.example.domain.observer.SaleObserver;
+import com.example.domain.observer.SaleConfirmed;
 import com.example.ports.outbound.ProductRepositoryPort;
 
-public class ActualizadorStock implements ObservadorVenta {
+public class StockUpdater implements SaleObserver {
 
     private final ProductRepositoryPort productRepositoryPort;
 
-    public ActualizadorStock(ProductRepositoryPort productRepositoryPort) {
+    public StockUpdater(ProductRepositoryPort productRepositoryPort) {
         this.productRepositoryPort = Objects.requireNonNull(
                 productRepositoryPort,
                 "El repositorio de productos es obligatorio.");
     }
 
     @Override
-    public void actualizar(VentaConfirmada evento) {
+    public void update(SaleConfirmed event) {
         Objects.requireNonNull(
-                evento,
+                event,
                 "El evento de venta confirmada es obligatorio.");
 
-        for (SaleDetail detalle : evento.getVenta().getDetalles()) {
-            Product product = detalle.getProducto();
-            int nuevaExistencia =
-                    product.getExistencia() - detalle.getCantidad();
+        for (SaleDetail detail : event.getSale().getDetails()) {
+            Product product = detail.getProduct();
+            int newStock =
+                    product.getStock() - detail.getQuantity();
 
-            if (nuevaExistencia < 0) {
+            if (newStock < 0) {
                 throw new IllegalArgumentException(
                         "La existencia del producto no puede ser negativa.");
             }
 
-            product.setExistencia(nuevaExistencia);
+            product.setStock(newStock);
             productRepositoryPort.save(product);
         }
     }

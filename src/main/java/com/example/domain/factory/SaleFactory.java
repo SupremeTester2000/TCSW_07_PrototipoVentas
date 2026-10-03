@@ -19,19 +19,19 @@ public interface SaleFactory {
             TaxStrategy taxStrategy) {
         Sale validatedSale = createSale(details);
         Sale configuredSale = new Sale(discountPolicy, taxStrategy);
-        for (SaleDetail detail : validatedSale.getDetalles()) {
-            configuredSale.agregarDetalle(detail);
+        for (SaleDetail detail : validatedSale.getDetails()) {
+            configuredSale.addDetail(detail);
         }
         return configuredSale;
     }
 
-    SaleDetail createSaleDetail(Product producto, int cantidad);
+    SaleDetail createSaleDetail(Product product, int quantity);
 
-    default Sale crearVenta(List<SaleDetail> detalles) {
-        return createSale(detalles);
+    default Sale buildSale(List<SaleDetail> details) {
+        return createSale(details);
     }
 
-    default SaleDetail crearDetalle(Product producto, int cantidad) {
-        return createSaleDetail(producto, cantidad);
+    default SaleDetail createDetail(Product product, int quantity) {
+        return createSaleDetail(product, quantity);
     }
 }

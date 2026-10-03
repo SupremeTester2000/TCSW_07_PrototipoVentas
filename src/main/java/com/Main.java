@@ -7,12 +7,12 @@ import com.example.adapters.inbound.SaleConsoleController;
 import com.example.adapters.outbound.InMemoryProductRepository;
 import com.example.adapters.outbound.InMemorySaleRepository;
 import com.example.application.facade.SaleFacade;
-import com.example.application.observer.ActualizadorStock;
+import com.example.application.observer.StockUpdater;
 import com.example.application.service.ProcessSaleService;
 import com.example.domain.factory.DefaultSaleFactory;
 import com.example.domain.factory.SaleFactory;
 import com.example.domain.model.Product;
-import com.example.domain.observer.EmisorVentaConfirmada;
+import com.example.domain.observer.SaleConfirmedPublisher;
 import com.example.domain.strategy.FunctionalDiscountPolicies;
 import com.example.domain.strategy.VatTaxStrategy;
 import com.example.ports.inbound.ProcessSaleUseCase;
@@ -23,17 +23,13 @@ public class Main {
     public static void main(String[] args) {
         Logger logger = Logger.getLogger(Main.class.getName());
 
-        ProductRepositoryPort productRepository =
-                new InMemoryProductRepository();
+        ProductRepositoryPort productRepository = new InMemoryProductRepository();
 
-        SaleRepositoryPort saleRepository =
-                new InMemorySaleRepository();
+        SaleRepositoryPort saleRepository = new InMemorySaleRepository();
 
-        SaleFactory saleFactory =
-                new DefaultSaleFactory();
+        SaleFactory saleFactory = new DefaultSaleFactory();
 
-        ProcessSaleUseCase processSaleUseCase =
-                new ProcessSaleService(
+        ProcessSaleUseCase processSaleUseCase = new ProcessSaleService(
                         productRepository,
                         saleRepository,
                         saleFactory,
@@ -41,35 +37,23 @@ public class Main {
                                 new BigDecimal("5")),
                         new VatTaxStrategy());
 
-        EmisorVentaConfirmada emisorVentaConfirmada =
-                new EmisorVentaConfirmada();
+        SaleConfirmedPublisher saleConfirmedPublisher = new SaleConfirmedPublisher();
 
-        ActualizadorStock actualizadorStock =
-                new ActualizadorStock(productRepository);
+        StockUpdater stockUpdater = new StockUpdater(productRepository);
 
-        emisorVentaConfirmada.registrarObservador(
-                actualizadorStock);
+        saleConfirmedPublisher.registerObserver(stockUpdater);
 
-        SaleFacade saleFacade =
-                new SaleFacade(
-                        processSaleUseCase,
-                        emisorVentaConfirmada);
+        SaleFacade saleFacade = new SaleFacade(processSaleUseCase, saleConfirmedPublisher);
 
-        SaleConsoleController controller =
-                new SaleConsoleController(saleFacade);
+        SaleConsoleController controller = new SaleConsoleController(saleFacade);
 
-        Product product =
-                new Product(
-                        "P001",
-                        "Producto de ejemplo",
-                        new BigDecimal("10.99"),
-                        100);
+        Product product =new Product("P001", "Producto de ejemplo", new BigDecimal("10.99"), 100);
 
-        controller.registrarProducto(product);
+        controller.registerProduct(product);
 
-        logger.info("Código: " + product.getCodigo());
-        logger.info("Nombre: " + product.getNombre());
-        logger.info("Precio: " + product.getPrecio());
-        logger.info("Existencia: " + product.getExistencia());
+        logger.info("Código: " + product.getCode());
+        logger.info("Nombre: " + product.getName());
+        logger.info("Precio: " + product.getPrice());
+        logger.info("Existencia: " + product.getStock());
     }
 }

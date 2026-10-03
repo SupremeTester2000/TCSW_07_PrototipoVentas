@@ -2,34 +2,34 @@ package com.example.config;
 
 import java.math.BigDecimal;
 
-public final class ConfiguracionVentasSingleton {
+public final class SalesConfigurationSingleton {
 
-    private volatile BigDecimal ivaRate = new BigDecimal("0.16");
+    private volatile BigDecimal vatRate = new BigDecimal("0.16");
     private volatile BigDecimal maximumDiscountAmount = new BigDecimal("100000.00");
     private volatile String baseCurrency = "MXN";
     private volatile int maximumSaleDetails = 100;
 
-    private ConfiguracionVentasSingleton() {
+    private SalesConfigurationSingleton() {
     }
 
     private static class Holder {
-        private static final ConfiguracionVentasSingleton INSTANCE = new ConfiguracionVentasSingleton();
+        private static final SalesConfigurationSingleton INSTANCE = new SalesConfigurationSingleton();
     }
 
-    public static ConfiguracionVentasSingleton getInstance() {
+    public static SalesConfigurationSingleton getInstance() {
         return Holder.INSTANCE;
     }
 
-    public BigDecimal getIvaRate() {
-        return ivaRate;
+    public BigDecimal getVatRate() {
+        return vatRate;
     }
 
-    public void setIvaRate(BigDecimal ivaRate) {
-        if (ivaRate == null || ivaRate.compareTo(BigDecimal.ZERO) < 0
-                || ivaRate.compareTo(BigDecimal.ONE) > 0) {
+    public void setVatRate(BigDecimal vatRate) {
+        if (vatRate == null || vatRate.compareTo(BigDecimal.ZERO) < 0
+                || vatRate.compareTo(BigDecimal.ONE) > 0) {
             throw new IllegalArgumentException("La tasa de IVA debe estar entre cero y uno.");
         }
-        this.ivaRate = ivaRate;
+        this.vatRate = vatRate;
     }
 
     public BigDecimal getMaximumDiscountAmount() {

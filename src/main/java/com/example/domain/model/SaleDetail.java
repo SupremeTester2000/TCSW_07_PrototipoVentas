@@ -10,40 +10,40 @@ import java.util.Objects;
 
 public final class SaleDetail {
 
-    private final Product producto;
-    private final int cantidad;
-    private final BigDecimal precioCapturado;
+    private final Product product;
+    private final int quantity;
+    private final BigDecimal capturedPrice;
 
-    public SaleDetail(Product producto, int cantidad) {
-        if (producto == null) {
+    public SaleDetail(Product product, int quantity) {
+        if (product == null) {
             throw new IllegalArgumentException("El producto no puede ser nulo.");
         }
-        if (cantidad <= 0) {
+        if (quantity <= 0) {
             throw new IllegalArgumentException("La cantidad debe ser mayor a cero.");
         }
-        if (cantidad > producto.getExistencia()) {
+        if (quantity > product.getStock()) {
             throw new IllegalArgumentException("La cantidad solicitada supera las existencias disponibles.");
         }
 
-        this.producto = producto;
-        this.cantidad = cantidad;
-        this.precioCapturado = producto.getPrecio();
+        this.product = product;
+        this.quantity = quantity;
+        this.capturedPrice = product.getPrice();
     }
 
-    public Product getProducto() {
-        return producto;
+    public Product getProduct() {
+        return product;
     }
 
-    public int getCantidad() {
-        return cantidad;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public BigDecimal getPrecioCapturado() {
-        return precioCapturado;
+    public BigDecimal getCapturedPrice() {
+        return capturedPrice;
     }
 
     public BigDecimal getSubtotal() {
-        return precioCapturado.multiply(BigDecimal.valueOf(cantidad));
+        return capturedPrice.multiply(BigDecimal.valueOf(quantity));
     }
 
     @Override
@@ -51,13 +51,13 @@ public final class SaleDetail {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SaleDetail match = (SaleDetail) o;
-        return cantidad == match.cantidad
-                && Objects.equals(precioCapturado, match.precioCapturado)
-                && Objects.equals(producto, match.producto);
+        return quantity == match.quantity
+                && Objects.equals(capturedPrice, match.capturedPrice)
+                && Objects.equals(product, match.product);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(producto, cantidad, precioCapturado);
+        return Objects.hash(product, quantity, capturedPrice);
     }
 }

@@ -10,7 +10,7 @@ import java.util.function.Function;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import com.example.config.ConfiguracionVentasSingleton;
+import com.example.config.SalesConfigurationSingleton;
 import com.example.domain.model.Product;
 import com.example.domain.model.Sale;
 import com.example.domain.strategy.DiscountPercent;
@@ -20,11 +20,11 @@ import com.example.domain.strategy.VatTaxStrategy;
 
 class DiscountStrategyTest {
 
-    private final ConfiguracionVentasSingleton configuration = ConfiguracionVentasSingleton.getInstance();
+    private final SalesConfigurationSingleton configuration = SalesConfigurationSingleton.getInstance();
 
     @AfterEach
     void restoreConfiguration() {
-        configuration.setIvaRate(new BigDecimal("0.16"));
+        configuration.setVatRate(new BigDecimal("0.16"));
         configuration.setMaximumDiscountAmount(new BigDecimal("100000.00"));
         configuration.setMaximumSaleDetails(100);
     }
@@ -54,20 +54,20 @@ class DiscountStrategyTest {
 
     @Test
     void singletonConfigurationControlsTaxAndMaximumDetails() {
-        configuration.setIvaRate(new BigDecimal("0.10"));
+        configuration.setVatRate(new BigDecimal("0.10"));
         configuration.setMaximumSaleDetails(1);
         Sale sale = new Sale();
         Product product = new Product("P001", "Producto", new BigDecimal("100.00"), 5);
-        sale.agregarDetalle(product, 1);
+        sale.addDetail(product, 1);
 
         assertEquals(new BigDecimal("110.00"), sale.getTotal());
-        assertThrows(IllegalArgumentException.class, () -> sale.agregarDetalle(product, 1));
-        assertSame(configuration, ConfiguracionVentasSingleton.getInstance());
+        assertThrows(IllegalArgumentException.class, () -> sale.addDetail(product, 1));
+        assertSame(configuration, SalesConfigurationSingleton.getInstance());
     }
 
     private Sale createSale(Function<Sale, BigDecimal> discountPolicy) {
         Sale sale = new Sale(discountPolicy, new VatTaxStrategy());
-        sale.agregarDetalle(new Product("P001", "Producto", new BigDecimal("1000.00"), 5), 1);
+        sale.addDetail(new Product("P001", "Producto", new BigDecimal("1000.00"), 5), 1);
         return sale;
     }
 }

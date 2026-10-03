@@ -12,13 +12,13 @@ import org.junit.jupiter.api.Test;
 import com.example.application.facade.SaleFacade;
 import com.example.domain.model.Product;
 import com.example.domain.model.Sale;
-import com.example.domain.observer.EmisorVentaConfirmada;
+import com.example.domain.observer.SaleConfirmedPublisher;
 import com.example.ports.inbound.ProcessSaleUseCase;
 
 class SaleFacadeTest {
 
     @Test
-    void procesarVentaDelegaCorrectamente() {
+    void delegateSaleProcessingCorrectly() {
         Product product = new Product(
                 "P001",
                 "Laptop",
@@ -26,28 +26,28 @@ class SaleFacadeTest {
                 10);
 
         Sale expectedSale = new Sale();
-        expectedSale.agregarDetalle(product, 1);
+        expectedSale.addDetail(product, 1);
 
         final Map<String, Integer> captured = new LinkedHashMap<>();
 
         ProcessSaleUseCase useCase = new ProcessSaleUseCase() {
             @Override
-            public void registrarProducto(Product product) {
+            public void registerProduct(Product product) {
             }
 
             @Override
-            public Sale crearVenta(Map<String, Integer> productos) {
+            public Sale createSale(Map<String, Integer> products) {
                 return expectedSale;
             }
 
             @Override
-            public void confirmarVenta(Sale sale) {
+            public void confirmSale(Sale sale) {
             }
 
             @Override
             public Sale processSale(
-                    Map<String, Integer> productosSolicitados) {
-                captured.putAll(productosSolicitados);
+                    Map<String, Integer> requestedProducts) {
+                captured.putAll(requestedProducts);
                 return expectedSale;
             }
         };
@@ -57,33 +57,33 @@ class SaleFacadeTest {
         Map<String, Integer> request = new LinkedHashMap<>();
         request.put("P001", 1);
 
-        Sale result = facade.procesarVenta(request);
+        Sale result = facade.processAndNotifySale(request);
 
         assertSame(expectedSale, result);
         assertSame(1, captured.get("P001"));
     }
 
     @Test
-    void processSaleDelegaEnProcesarVenta() {
+    void delegateProcessSaleToProcessAndNotifySale() {
         Sale expectedSale = new Sale();
 
         ProcessSaleUseCase useCase = new ProcessSaleUseCase() {
             @Override
-            public void registrarProducto(Product product) {
+            public void registerProduct(Product product) {
             }
 
             @Override
-            public Sale crearVenta(Map<String, Integer> productos) {
+            public Sale createSale(Map<String, Integer> products) {
                 return expectedSale;
             }
 
             @Override
-            public void confirmarVenta(Sale sale) {
+            public void confirmSale(Sale sale) {
             }
 
             @Override
             public Sale processSale(
-                    Map<String, Integer> productosSolicitados) {
+                    Map<String, Integer> requestedProducts) {
                 return expectedSale;
             }
         };
@@ -99,7 +99,7 @@ class SaleFacadeTest {
     }
 
     @Test
-    void registrarProductoDelegaCorrectamente() {
+    void delegateProductRegistrationCorrectly() {
         Product product = new Product(
                 "P001",
                 "Laptop",
@@ -110,94 +110,94 @@ class SaleFacadeTest {
 
         ProcessSaleUseCase useCase = new ProcessSaleUseCase() {
             @Override
-            public void registrarProducto(Product product) {
+            public void registerProduct(Product product) {
                 capturedProduct[0] = product;
             }
 
             @Override
-            public Sale crearVenta(Map<String, Integer> productos) {
+            public Sale createSale(Map<String, Integer> products) {
                 return new Sale();
             }
 
             @Override
-            public void confirmarVenta(Sale sale) {
+            public void confirmSale(Sale sale) {
             }
 
             @Override
             public Sale processSale(
-                    Map<String, Integer> productosSolicitados) {
+                    Map<String, Integer> requestedProducts) {
                 return new Sale();
             }
         };
 
         SaleFacade facade = new SaleFacade(useCase);
 
-        facade.registrarProducto(product);
+        facade.registerProduct(product);
 
         assertSame(product, capturedProduct[0]);
     }
 
     @Test
-    void confirmarVentaDelegaCorrectamente() {
+    void delegateSaleConfirmationCorrectly() {
         Sale sale = new Sale();
 
         final Sale[] capturedSale = new Sale[1];
 
         ProcessSaleUseCase useCase = new ProcessSaleUseCase() {
             @Override
-            public void registrarProducto(Product product) {
+            public void registerProduct(Product product) {
             }
 
             @Override
-            public Sale crearVenta(Map<String, Integer> productos) {
+            public Sale createSale(Map<String, Integer> products) {
                 return new Sale();
             }
 
             @Override
-            public void confirmarVenta(Sale sale) {
+            public void confirmSale(Sale sale) {
                 capturedSale[0] = sale;
             }
 
             @Override
             public Sale processSale(
-                    Map<String, Integer> productosSolicitados) {
+                    Map<String, Integer> requestedProducts) {
                 return new Sale();
             }
         };
 
         SaleFacade facade = new SaleFacade(useCase);
 
-        facade.confirmarVenta(sale);
+        facade.confirmSale(sale);
 
         assertSame(sale, capturedSale[0]);
     }
 
     @Test
-    void rechazaCasoDeUsoNulo() {
+    void rejectNullUseCase() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new SaleFacade(null));
     }
 
     @Test
-    void rechazaEmisorNulo() {
+    void rejectNullPublisher() {
         ProcessSaleUseCase useCase = new ProcessSaleUseCase() {
             @Override
-            public void registrarProducto(Product product) {
+            public void registerProduct(Product product) {
             }
 
             @Override
-            public Sale crearVenta(Map<String, Integer> productos) {
+            public Sale createSale(Map<String, Integer> products) {
                 return new Sale();
             }
 
             @Override
-            public void confirmarVenta(Sale sale) {
+            public void confirmSale(Sale sale) {
             }
 
             @Override
             public Sale processSale(
-                    Map<String, Integer> productosSolicitados) {
+                    Map<String, Integer> requestedProducts) {
                 return new Sale();
             }
         };

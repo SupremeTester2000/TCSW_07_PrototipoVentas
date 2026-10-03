@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Objects;
 
-import com.example.config.ConfiguracionVentasSingleton;
+import com.example.config.SalesConfigurationSingleton;
 import com.example.domain.model.Sale;
 
 public final class DiscountPercent implements DiscountStrategy {
@@ -27,7 +27,7 @@ public final class DiscountPercent implements DiscountStrategy {
                 .multiply(percentage)
                 .divide(ONE_HUNDRED, 2, RoundingMode.HALF_UP);
         return calculated.min(sale.getSubtotal())
-                .min(ConfiguracionVentasSingleton.getInstance().getMaximumDiscountAmount())
+                .min(SalesConfigurationSingleton.getInstance().getMaximumDiscountAmount())
                 .setScale(2, RoundingMode.HALF_UP);
     }
 }

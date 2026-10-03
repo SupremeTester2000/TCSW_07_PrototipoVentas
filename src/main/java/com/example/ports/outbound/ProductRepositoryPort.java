@@ -9,7 +9,7 @@ public interface ProductRepositoryPort {
 
     void save(Product product);
 
-    Optional<Product> findByCodigo(String codigo);
+    Optional<Product> findByCode(String code);
 
     List<Product> findAll();
 }

@@ -77,23 +77,23 @@ public class ProcessSaleService implements ProcessSaleUseCase {
                 "La estrategia de impuesto es obligatoria.");
     }
 
-    public void registrarProducto(Product product) {
+    public void registerProduct(Product product) {
         productRepositoryPort.save(product);
     }
 
-    public Sale crearVenta(Map<String, Integer> productos) {
-        return buildSale(productos, new LinkedHashMap<>());
+    public Sale createSale(Map<String, Integer> products) {
+        return buildSale(products, new LinkedHashMap<>());
     }
 
-    public void confirmarVenta(Sale sale) {
+    public void confirmSale(Sale sale) {
         saleRepositoryPort.save(sale);
     }
 
     @Override
-    public Sale processSale(Map<String, Integer> productosSolicitados) {
-        Map<String, Product> productosEncontrados = new LinkedHashMap<>();
+    public Sale processSale(Map<String, Integer> requestedProducts) {
+        Map<String, Product> foundProducts = new LinkedHashMap<>();
 
-        Sale sale = buildSale(productosSolicitados, productosEncontrados);
+        Sale sale = buildSale(requestedProducts, foundProducts);
 
         saleRepositoryPort.save(sale);
 
@@ -121,10 +121,10 @@ public class ProcessSaleService implements ProcessSaleUseCase {
 
             String code = entry.getKey();
 
-            Product product = productRepositoryPort.findByCodigo(code)
+            Product product = productRepositoryPort.findByCode(code)
                     .orElseThrow(() -> new ProductNotFound(code));
 
-            if (quantity > product.getExistencia()) {
+            if (quantity > product.getStock()) {
                 throw new IllegalArgumentException(
                         "La cantidad solicitada supera las existencias disponibles.");
             }

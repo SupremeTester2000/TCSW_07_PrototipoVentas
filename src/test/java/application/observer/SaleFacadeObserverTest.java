@@ -12,18 +12,18 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 import com.example.application.facade.SaleFacade;
-import com.example.application.observer.ActualizadorStock;
+import com.example.application.observer.StockUpdater;
 import com.example.application.service.ProcessSaleService;
 import com.example.domain.model.Product;
 import com.example.domain.model.Sale;
-import com.example.domain.observer.EmisorVentaConfirmada;
+import com.example.domain.observer.SaleConfirmedPublisher;
 import com.example.ports.outbound.ProductRepositoryPort;
 import com.example.ports.outbound.SaleRepositoryPort;
 
 class SaleFacadeObserverTest {
 
     @Test
-    void procesaVentaYNotificaActualizadorStock() {
+    void processSaleAndNotifyStockUpdater() {
 
         InMemoryProductRepositoryFake productRepository =
                 new InMemoryProductRepositoryFake();
@@ -44,33 +44,33 @@ class SaleFacadeObserverTest {
                         productRepository,
                         saleRepository);
 
-        EmisorVentaConfirmada emisor =
-                new EmisorVentaConfirmada();
+        SaleConfirmedPublisher publisher =
+                new SaleConfirmedPublisher();
 
-        ActualizadorStock actualizadorStock =
-                new ActualizadorStock(productRepository);
+        StockUpdater stockUpdater =
+                new StockUpdater(productRepository);
 
-        emisor.registrarObservador(actualizadorStock);
+        publisher.registerObserver(stockUpdater);
 
         SaleFacade facade =
                 new SaleFacade(
                         processSaleService,
-                        emisor);
+                        publisher);
 
-        Map<String, Integer> productos =
+        Map<String, Integer> products =
                 new LinkedHashMap<>();
 
-        productos.put("P001", 2);
+        products.put("P001", 2);
 
-        Sale sale = facade.procesarVenta(productos);
+        Sale sale = facade.processAndNotifySale(products);
 
-        assertEquals(1, sale.getDetalles().size());
+        assertEquals(1, sale.getDetails().size());
         assertEquals(
                 0,
                 new BigDecimal("2784.00").compareTo(
                         sale.getTotal()));
 
-        assertEquals(8, product.getExistencia());
+        assertEquals(8, product.getStock());
         assertEquals(1, saleRepository.sales.size());
     }
 
@@ -82,12 +82,12 @@ class SaleFacadeObserverTest {
 
         @Override
         public void save(Product product) {
-            products.put(product.getCodigo(), product);
+            products.put(product.getCode(), product);
         }
 
         @Override
-        public Optional<Product> findByCodigo(String codigo) {
-            return Optional.ofNullable(products.get(codigo));
+        public Optional<Product> findByCode(String code) {
+            return Optional.ofNullable(products.get(code));
         }
 
         @Override

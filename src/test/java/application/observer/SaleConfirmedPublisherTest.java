@@ -9,16 +9,16 @@ import org.junit.jupiter.api.Test;
 
 import com.example.domain.model.Product;
 import com.example.domain.model.Sale;
-import com.example.domain.observer.EmisorVentaConfirmada;
-import com.example.domain.observer.ObservadorVenta;
-import com.example.domain.observer.VentaConfirmada;
+import com.example.domain.observer.SaleConfirmedPublisher;
+import com.example.domain.observer.SaleObserver;
+import com.example.domain.observer.SaleConfirmed;
 
-class EmisorVentaConfirmadaTest {
+class SaleConfirmedPublisherTest {
 
     @Test
-    void notificaLaVentaConfirmadaAlObservador() {
-        EmisorVentaConfirmada emisor =
-                new EmisorVentaConfirmada();
+    void notifyObserverOfConfirmedSale() {
+        SaleConfirmedPublisher publisher =
+                new SaleConfirmedPublisher();
 
         Product product = new Product(
                 "P001",
@@ -27,23 +27,23 @@ class EmisorVentaConfirmadaTest {
                 10);
 
         Sale sale = new Sale();
-        sale.agregarDetalle(product, 2);
+        sale.addDetail(product, 2);
 
         CapturingObserver observer =
                 new CapturingObserver();
 
-        emisor.registrarObservador(observer);
+        publisher.registerObserver(observer);
 
-        emisor.notificarVentaConfirmada(sale);
+        publisher.publishSaleConfirmed(sale);
 
         assertEquals(1, observer.notificationCount);
         assertSame(sale, observer.receivedSale);
     }
 
     @Test
-    void notificaATodosLosObservadoresRegistrados() {
-        EmisorVentaConfirmada emisor =
-                new EmisorVentaConfirmada();
+    void notifyAllRegisteredObservers() {
+        SaleConfirmedPublisher publisher =
+                new SaleConfirmedPublisher();
 
         Product product = new Product(
                 "P001",
@@ -52,7 +52,7 @@ class EmisorVentaConfirmadaTest {
                 10);
 
         Sale sale = new Sale();
-        sale.agregarDetalle(product, 1);
+        sale.addDetail(product, 1);
 
         CapturingObserver observer1 =
                 new CapturingObserver();
@@ -60,10 +60,10 @@ class EmisorVentaConfirmadaTest {
         CapturingObserver observer2 =
                 new CapturingObserver();
 
-        emisor.registrarObservador(observer1);
-        emisor.registrarObservador(observer2);
+        publisher.registerObserver(observer1);
+        publisher.registerObserver(observer2);
 
-        emisor.notificarVentaConfirmada(sale);
+        publisher.publishSaleConfirmed(sale);
 
         assertEquals(1, observer1.notificationCount);
         assertEquals(1, observer2.notificationCount);
@@ -73,15 +73,15 @@ class EmisorVentaConfirmadaTest {
     }
 
     private static class CapturingObserver
-            implements ObservadorVenta {
+            implements SaleObserver {
 
         private int notificationCount;
         private Sale receivedSale;
 
         @Override
-        public void actualizar(VentaConfirmada evento) {
+        public void update(SaleConfirmed event) {
             notificationCount++;
-            receivedSale = evento.getVenta();
+            receivedSale = event.getSale();
         }
     }
 }

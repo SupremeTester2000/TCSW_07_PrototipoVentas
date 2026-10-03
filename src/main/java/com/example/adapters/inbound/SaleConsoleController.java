@@ -17,19 +17,19 @@ public class SaleConsoleController {
         this.saleFacade = saleFacade;
     }
 
-    public void registrarProducto(Product product) {
-        saleFacade.registrarProducto(product);
+    public void registerProduct(Product product) {
+        saleFacade.registerProduct(product);
     }
 
-    public Sale crearVenta(Map<String, Integer> productos) {
-        return saleFacade.procesarVenta(productos);
+    public Sale createSale(Map<String, Integer> products) {
+        return saleFacade.processAndNotifySale(products);
     }
 
-    public Sale procesarVenta(Map<String, Integer> productos) {
-        return saleFacade.procesarVenta(productos);
+    public Sale processAndNotifySale(Map<String, Integer> products) {
+        return saleFacade.processAndNotifySale(products);
     }
 
-    public void confirmarVenta(Sale sale) {
-        saleFacade.confirmarVenta(sale);
+    public void confirmSale(Sale sale) {
+        saleFacade.confirmSale(sale);
     }
 }
