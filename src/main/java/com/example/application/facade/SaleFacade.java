@@ -1,5 +1,6 @@
 package com.example.application.facade;
 
+import java.util.List;
 import java.util.Map;
 
 import com.example.domain.model.Product;
@@ -46,6 +47,21 @@ public class SaleFacade implements SaleFacadePort {
 
     public void registerProduct(Product product) {
         processSaleUseCase.registerProduct(product);
+    }
+
+    @Override
+    public List<Product> listProducts() {
+        return processSaleUseCase.listProducts();
+    }
+
+    @Override
+    public void updateProduct(Product product) {
+        processSaleUseCase.updateProduct(product);
+    }
+
+    @Override
+    public String getNextProductCode() {
+        return processSaleUseCase.getNextProductCode();
     }
 
     public void confirmSale(Sale sale) {

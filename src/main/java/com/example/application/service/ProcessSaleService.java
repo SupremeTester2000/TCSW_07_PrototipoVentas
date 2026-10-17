@@ -20,9 +20,15 @@ import com.example.ports.outbound.SaleRepositoryPort;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.regex.Pattern;
 import java.util.function.Function;
+import java.util.logging.Logger;
 
 public class ProcessSaleService implements ProcessSaleUseCase {
+
+    private static final Logger LOGGER = Logger.getLogger(ProcessSaleService.class.getName());
+    private static final Pattern PRODUCT_CODE_PATTERN = Pattern.compile("^P\\d{5}$");
+    private static final int MAX_PRODUCT_CODE = 99999;
 
     private final ProductRepositoryPort productRepositoryPort;
     private final SaleRepositoryPort saleRepositoryPort;
@@ -79,6 +85,40 @@ public class ProcessSaleService implements ProcessSaleUseCase {
 
     public void registerProduct(Product product) {
         productRepositoryPort.save(product);
+    }
+
+    @Override
+    public List<Product> listProducts() {
+        return productRepositoryPort.findAll();
+    }
+
+    @Override
+    public void updateProduct(Product product) {
+        Objects.requireNonNull(product, "El producto es obligatorio.");
+        if (!productRepositoryPort.findByCode(product.getCode()).isPresent()) {
+            throw new ProductNotFound(product.getCode());
+        }
+        productRepositoryPort.save(product);
+    }
+
+    @Override
+    public String getNextProductCode() {
+        int maximumCode = 0;
+        for (Product product : productRepositoryPort.findAll()) {
+            if (product == null || product.getCode() == null
+                    || !PRODUCT_CODE_PATTERN.matcher(product.getCode()).matches()) {
+                continue;
+            }
+            int number = Integer.parseInt(product.getCode().substring(1));
+            maximumCode = Math.max(maximumCode, number);
+        }
+
+        if (maximumCode >= MAX_PRODUCT_CODE) {
+            LOGGER.warning("Product code sequence reached its maximum value.");
+            throw new IllegalStateException("No es posible generar un nuevo código de producto.");
+        }
+
+        return String.format(java.util.Locale.ROOT, "P%05d", maximumCode + 1);
     }
 
     public Sale createSale(Map<String, Integer> products) {

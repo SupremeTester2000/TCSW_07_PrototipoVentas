@@ -293,6 +293,76 @@ class ProcessSaleServiceTest {
                 saleRepository.sales.get(0));
     }
 
+    @Test
+    void generateNextProductCodeFromMaximumValidExistingCode() {
+        InMemoryProductRepositoryFake products = new InMemoryProductRepositoryFake();
+        products.save(new Product("P00001", "Uno", BigDecimal.ONE, 1));
+        products.save(new Product("P00004", "Cuatro", BigDecimal.ONE, 1));
+        products.save(new Product("legacy", "Legacy", BigDecimal.ONE, 1));
+
+        ProcessSaleService service = new ProcessSaleService(
+                products,
+                new InMemorySaleRepositoryFake());
+
+        assertEquals("P00005", service.getNextProductCode());
+    }
+
+    @Test
+    void generateFirstProductCodeWhenThereAreNoValidCodes() {
+        InMemoryProductRepositoryFake products = new InMemoryProductRepositoryFake();
+        products.save(new Product("P001", "Legacy", BigDecimal.ONE, 1));
+
+        ProcessSaleService service = new ProcessSaleService(
+                products,
+                new InMemorySaleRepositoryFake());
+
+        assertEquals("P00001", service.getNextProductCode());
+    }
+
+    @Test
+    void failWhenProductCodeSequenceIsExhausted() {
+        InMemoryProductRepositoryFake products = new InMemoryProductRepositoryFake();
+        products.save(new Product("P99999", "Final", BigDecimal.ONE, 1));
+
+        ProcessSaleService service = new ProcessSaleService(
+                products,
+                new InMemorySaleRepositoryFake());
+
+        assertThrows(IllegalStateException.class, service::getNextProductCode);
+    }
+
+    @Test
+    void updateExistingProductWithoutChangingItsCode() {
+        InMemoryProductRepositoryFake products = new InMemoryProductRepositoryFake();
+        products.save(new Product("P00001", "Original", BigDecimal.ONE, 1));
+
+        ProcessSaleService service = new ProcessSaleService(
+                products,
+                new InMemorySaleRepositoryFake());
+        Product updated = new Product("P00001", "Actualizado", new BigDecimal("50.99"), 20);
+        service.updateProduct(updated);
+
+        Product stored = products.findByCode("P00001").get();
+        assertEquals("P00001", stored.getCode());
+        assertEquals("Actualizado", stored.getName());
+        assertEquals(0, new BigDecimal("50.99").compareTo(stored.getPrice()));
+        assertEquals(20, stored.getStock());
+    }
+
+    @Test
+    void updatingMissingProductDoesNotRegisterIt() {
+        InMemoryProductRepositoryFake products = new InMemoryProductRepositoryFake();
+        ProcessSaleService service = new ProcessSaleService(
+                products,
+                new InMemorySaleRepositoryFake());
+
+        assertThrows(
+                ProductNotFound.class,
+                () -> service.updateProduct(new Product(
+                        "P00001", "No existente", BigDecimal.ONE, 1)));
+        assertEquals(0, products.findAll().size());
+    }
+
     private static class InMemoryProductRepositoryFake
             implements ProductRepositoryPort {
 

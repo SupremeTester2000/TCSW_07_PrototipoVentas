@@ -24,7 +24,7 @@ La capa de dominio soporta ambos enfoques: las clases clásicas implementan `Fun
 
 ## Singleton de configuración
 
-`ConfiguracionVentasSingleton` es adecuado aquí como punto único de verdad para parámetros compartidos por el módulo: tasa de IVA predeterminada, moneda base, máximo de detalles por venta y descuento máximo. Las estrategias consultan esa configuración al calcular descuentos o impuestos, y `Sale` aplica el límite de detalles.
+`SalesConfigurationSingleton` es adecuado aquí como punto único de verdad para parámetros compartidos por el módulo: tasa de IVA predeterminada, moneda base, máximo de detalles por venta y descuento máximo. Las estrategias consultan esa configuración al calcular descuentos o impuestos, y `Sale` aplica el límite de detalles.
 
 La inicialización diferida usa el idiom Holder de Java: la clase interna se inicializa al primer acceso, y el mecanismo de inicialización de clases de la JVM garantiza publicación segura y una única instancia. Los parámetros mutables se guardan en campos `volatile`; cada lectura o escritura individual es visible entre hilos. Las actualizaciones de propiedades distintas no forman una transacción atómica.
 

@@ -3,7 +3,10 @@ package com;
 import java.math.BigDecimal;
 import java.util.logging.Logger;
 
-import com.example.adapters.inbound.SaleConsoleController;
+import javax.swing.SwingUtilities;
+
+import com.example.adapters.inbound.swing.controller.ProductController;
+import com.example.adapters.inbound.swing.view.ProductMainFrame;
 import com.example.adapters.outbound.InMemoryProductRepository;
 import com.example.adapters.outbound.InMemorySaleRepository;
 import com.example.application.facade.SaleFacade;
@@ -20,40 +23,34 @@ import com.example.ports.outbound.ProductRepositoryPort;
 import com.example.ports.outbound.SaleRepositoryPort;
 
 public class Main {
+    private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
+
     public static void main(String[] args) {
-        Logger logger = Logger.getLogger(Main.class.getName());
+        SwingUtilities.invokeLater(() -> {
+            ProductRepositoryPort productRepository = new InMemoryProductRepository();
+            SaleRepositoryPort saleRepository = new InMemorySaleRepository();
+            SaleFactory saleFactory = new DefaultSaleFactory();
 
-        ProductRepositoryPort productRepository = new InMemoryProductRepository();
+            ProcessSaleUseCase processSaleUseCase = new ProcessSaleService(
+                    productRepository,
+                    saleRepository,
+                    saleFactory,
+                    FunctionalDiscountPolicies.percentage(new BigDecimal("5")),
+                    new VatTaxStrategy());
 
-        SaleRepositoryPort saleRepository = new InMemorySaleRepository();
+            SaleConfirmedPublisher saleConfirmedPublisher = new SaleConfirmedPublisher();
+            StockUpdater stockUpdater = new StockUpdater(productRepository);
+            saleConfirmedPublisher.registerObserver(stockUpdater);
 
-        SaleFactory saleFactory = new DefaultSaleFactory();
+            SaleFacade saleFacade = new SaleFacade(processSaleUseCase, saleConfirmedPublisher);
+            ProductController productController = new ProductController(saleFacade);
+            Product product = new Product("P001", "Producto de ejemplo", new BigDecimal("10.99"), 100);
+            saleFacade.registerProduct(product);
+            productController.loadProducts();
 
-        ProcessSaleUseCase processSaleUseCase = new ProcessSaleService(
-                        productRepository,
-                        saleRepository,
-                        saleFactory,
-                        FunctionalDiscountPolicies.percentage(
-                                new BigDecimal("5")),
-                        new VatTaxStrategy());
-
-        SaleConfirmedPublisher saleConfirmedPublisher = new SaleConfirmedPublisher();
-
-        StockUpdater stockUpdater = new StockUpdater(productRepository);
-
-        saleConfirmedPublisher.registerObserver(stockUpdater);
-
-        SaleFacade saleFacade = new SaleFacade(processSaleUseCase, saleConfirmedPublisher);
-
-        SaleConsoleController controller = new SaleConsoleController(saleFacade);
-
-        Product product =new Product("P001", "Producto de ejemplo", new BigDecimal("10.99"), 100);
-
-        controller.registerProduct(product);
-
-        logger.info("Código: " + product.getCode());
-        logger.info("Nombre: " + product.getName());
-        logger.info("Precio: " + product.getPrice());
-        logger.info("Existencia: " + product.getStock());
+            ProductMainFrame frame = new ProductMainFrame(productController);
+            frame.setVisible(true);
+            LOGGER.info("Aplicación Swing iniciada correctamente.");
+        });
     }
 }

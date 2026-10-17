@@ -6,7 +6,7 @@
 ## Estructura del Dominio
 **Product** representa un artículo; **SaleDetail** captura el precio histórico y cantidad; **Sale** calcula subtotal, descuento, IVA y total final delegando las políticas a estrategias.
 
-Las políticas clásicas de descuento (`DiscountPercent` y `FixedDiscount`) implementan `DiscountStrategy`. También se ofrece la alternativa funcional `FunctionalDiscountPolicies`, que produce `Function<Sale, BigDecimal>`. La tasa de IVA, moneda base, límite de detalles y descuento máximo se administran mediante `ConfiguracionVentasSingleton`.
+Las políticas clásicas de descuento (`DiscountPercent` y `FixedDiscount`) implementan `DiscountStrategy`. También se ofrece la alternativa funcional `FunctionalDiscountPolicies`, que produce `Function<Sale, BigDecimal>`. La tasa de IVA, moneda base, límite de detalles y descuento máximo se administran mediante `SalesConfigurationSingleton`.
 
 ## Ejecución
 
@@ -23,4 +23,7 @@ Se sometió a una revisión de código con la herramienta SonarQube para el IDE 
 
 ---
 # Diagramas de clases del proyecto - Implementación de arquitectura hexagonal
+
+[Diagrama UML actualizado de clases](docs/class-diagram.md) · [Fuente Mermaid](docs/class-diagram.mmd)
+
 <img width="1600" height="1119" alt="image" src="https://github.com/user-attachments/assets/4ee72933-7313-4fce-aa67-d2d89fca0e6d" />
