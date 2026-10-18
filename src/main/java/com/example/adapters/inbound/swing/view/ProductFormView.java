@@ -3,7 +3,6 @@ package com.example.adapters.inbound.swing.view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -46,7 +45,7 @@ public class ProductFormView extends ProductView {
     private final JButton saveButton = new JButton("Guardar");
     private final JPanel alertPanel = createAlertPanel();
 
-    private Runnable onAlertAccept = () -> { };
+    private transient Runnable onAlertAccept = () -> { };
     private boolean successAlert;
     private boolean codeTouched;
     private boolean nameTouched;
@@ -275,9 +274,10 @@ public class ProductFormView extends ProductView {
     }
 
     private String validateNameField() {
-        return nameField.getText().trim().isEmpty()
-                ? nameTouched ? "El nombre es obligatorio." : null
-                : null;
+        if (nameField.getText().trim().isEmpty() && nameTouched) {
+            return "El nombre es obligatorio.";
+        }
+        return null;
     }
 
     private String validatePriceField() {
@@ -466,6 +466,7 @@ public class ProductFormView extends ProductView {
         return codeField.getText();
     }
 
+    @Override
     public String getName() {
         return nameField.getText();
     }
@@ -557,7 +558,7 @@ public class ProductFormView extends ProductView {
     private void dismissAlert() {
         boolean returnToCatalog = successAlert;
         hideAlert();
-        if (returnToCatalog) {
+        if (returnToCatalog && onAlertAccept != null) {
             onAlertAccept.run();
         }
     }

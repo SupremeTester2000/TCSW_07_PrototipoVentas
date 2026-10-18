@@ -3,8 +3,8 @@ package com.example.adapters.inbound.swing.view;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,7 +15,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 
+import com.example.adapters.inbound.swing.controller.CartController;
 import com.example.adapters.inbound.swing.controller.ProductController;
 import com.example.adapters.inbound.swing.model.ProductDTO;
 
@@ -23,20 +25,30 @@ public class ProductMainFrame extends JFrame {
 
     private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = Logger.getLogger(ProductMainFrame.class.getName());
+    private static final String CATALOG_CARD = "catalog";
+    private static final String FORM_CARD = "form";
+    private static final String DETAIL_CARD = "detail";
+    private static final String CART_CARD = "cart";
 
     private final CardLayout cardLayout = new CardLayout();
     private final JPanel mainContent = new JPanel(cardLayout);
     private final ProductCatalogView catalogView;
+    private final CartView cartView;
     private final ProductFormView formView;
     private final ProductDetailView detailView;
-    private final ProductController controller;
+    private final transient ProductController controller;
+    private final JButton catalogButton;
+    private final JButton cartButton;
 
-    public ProductMainFrame(ProductController controller) {
+    public ProductMainFrame(ProductController controller, CartController cartController) {
         super("Prototipo Ventas");
         this.controller = controller;
         this.catalogView = new ProductCatalogView(controller.getTableModel());
+        this.cartView = new CartView(cartController);
         this.formView = new ProductFormView();
         this.detailView = new ProductDetailView();
+        this.catalogButton = new JButton();
+        this.cartButton = new JButton();
 
         buildMainWindow();
         bindNavigation();
@@ -45,7 +57,7 @@ public class ProductMainFrame extends JFrame {
     }
 
     private void buildMainWindow() {
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
         JPanel sidebar = createSidebar();
@@ -56,19 +68,19 @@ public class ProductMainFrame extends JFrame {
         mainContent.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         mainContent.setPreferredSize(new Dimension(980, 650));
 
-        mainContent.add(catalogView, "catalog");
-        mainContent.add(formView, "form");
-        mainContent.add(detailView, "detail");
+        mainContent.add(catalogView, CATALOG_CARD);
+        mainContent.add(formView, FORM_CARD);
+        mainContent.add(detailView, DETAIL_CARD);
+        mainContent.add(cartView, CART_CARD);
 
-        cardLayout.show(mainContent, "catalog");
+        cardLayout.show(mainContent, CATALOG_CARD);
         pack();
         setMinimumSize(new Dimension(980, 620));
         setLocationRelativeTo(null);
     }
 
     private JPanel createSidebar() {
-        JPanel sidebar = new JPanel();
-        sidebar.setLayout(new BorderLayout());
+        JPanel sidebar = new JPanel(new BorderLayout());
         sidebar.setBackground(new Color(45, 42, 74));
         sidebar.setPreferredSize(new Dimension(190, 0));
 
@@ -88,8 +100,8 @@ public class ProductMainFrame extends JFrame {
         menu.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
 
         addMenuItem(menu, "Inicio", false);
-        addMenuItem(menu, "Productos", true);
-        addMenuItem(menu, "Carrito", false);
+        addMenuItem(menu, "Productos", true, catalogButton);
+        addMenuItem(menu, "Carrito", false, cartButton);
         addMenuItem(menu, "Ventas", false);
         addMenuItem(menu, "Configuración", false);
 
@@ -102,7 +114,11 @@ public class ProductMainFrame extends JFrame {
     }
 
     private void addMenuItem(JPanel menu, String text, boolean active) {
-        JButton button = new JButton(text);
+        addMenuItem(menu, text, active, new JButton());
+    }
+
+    private void addMenuItem(JPanel menu, String text, boolean active, JButton button) {
+        button.setText(text);
         button.setFocusPainted(false);
         button.setContentAreaFilled(true);
         button.setOpaque(true);
@@ -113,7 +129,7 @@ public class ProductMainFrame extends JFrame {
         button.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 13));
         button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         button.setBorderPainted(false);
-        button.setEnabled(active);
+        button.setEnabled(active || "Carrito".equals(text));
         button.setPreferredSize(new Dimension(166, 40));
         button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         button.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -122,7 +138,9 @@ public class ProductMainFrame extends JFrame {
     }
 
     private void bindNavigation() {
-        catalogView.setOnNewProduct(() -> showForm());
+        catalogButton.addActionListener(event -> showCatalog());
+        cartButton.addActionListener(event -> showCart());
+        catalogView.setOnNewProduct(this::showForm);
         catalogView.setOnViewProduct(product -> {
             detailView.display(product);
             showDetail();
@@ -185,12 +203,12 @@ public class ProductMainFrame extends JFrame {
             detailView.display(product);
             showDetail();
         });
-        cardLayout.show(mainContent, "form");
+        cardLayout.show(mainContent, FORM_CARD);
     }
 
     private void cancelForm() {
         if (formView.getFormMode() == ProductFormView.FormMode.EDIT) {
-            cardLayout.show(mainContent, "detail");
+            cardLayout.show(mainContent, DETAIL_CARD);
         } else {
             showCatalog();
         }
@@ -202,7 +220,7 @@ public class ProductMainFrame extends JFrame {
 
     public void showCatalog() {
         controller.loadProducts();
-        cardLayout.show(mainContent, "catalog");
+        cardLayout.show(mainContent, CATALOG_CARD);
     }
 
     public void showForm() {
@@ -218,10 +236,14 @@ public class ProductMainFrame extends JFrame {
                     "Error en la operación",
                     "No es posible generar un nuevo código de producto.");
         }
-        cardLayout.show(mainContent, "form");
+        cardLayout.show(mainContent, FORM_CARD);
     }
 
     public void showDetail() {
-        cardLayout.show(mainContent, "detail");
+        cardLayout.show(mainContent, DETAIL_CARD);
+    }
+
+    public void showCart() {
+        cardLayout.show(mainContent, CART_CARD);
     }
 }
