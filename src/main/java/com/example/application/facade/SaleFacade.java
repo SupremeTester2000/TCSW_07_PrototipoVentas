@@ -45,6 +45,11 @@ public class SaleFacade implements SaleFacadePort {
         return sale;
     }
 
+    @Override
+    public Sale createSale(Map<String, Integer> products) {
+        return processSaleUseCase.createSale(products);
+    }
+
     public void registerProduct(Product product) {
         processSaleUseCase.registerProduct(product);
     }

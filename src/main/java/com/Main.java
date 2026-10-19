@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 
 import com.example.adapters.inbound.swing.controller.ProductController;
+import com.example.adapters.inbound.swing.controller.CartController;
 import com.example.adapters.inbound.swing.view.ProductMainFrame;
 import com.example.adapters.outbound.InMemoryProductRepository;
 import com.example.adapters.outbound.InMemorySaleRepository;
@@ -44,11 +45,12 @@ public class Main {
 
             SaleFacade saleFacade = new SaleFacade(processSaleUseCase, saleConfirmedPublisher);
             ProductController productController = new ProductController(saleFacade);
+            CartController cartController = new CartController(saleFacade);
             Product product = new Product("P001", "Producto de ejemplo", new BigDecimal("10.99"), 100);
             saleFacade.registerProduct(product);
             productController.loadProducts();
 
-            ProductMainFrame frame = new ProductMainFrame(productController);
+            ProductMainFrame frame = new ProductMainFrame(productController, cartController);
             frame.setVisible(true);
             LOGGER.info("Aplicación Swing iniciada correctamente.");
         });

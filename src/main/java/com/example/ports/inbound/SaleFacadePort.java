@@ -10,6 +10,10 @@ public interface SaleFacadePort {
 
     Sale processSale(Map<String, Integer> products);
 
+    default Sale createSale(Map<String, Integer> products) {
+        throw new UnsupportedOperationException("La previsualización de ventas no está disponible.");
+    }
+
     void registerProduct(Product product);
 
     default List<Product> listProducts() {

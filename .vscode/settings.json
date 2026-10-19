@@ -2,8 +2,9 @@
     "java.configuration.runtimes": [
         {
             "name": "JavaSE-11",
-            "path": "/Library/Java/JavaVirtualMachines/temurin-11.jdk/Contents/Home",
+            "path": "/usr/lib/jvm/java-11-openjdk-amd64",
             "default": true
         }
-    ]
+    ],
+    "java.configuration.updateBuildConfiguration": "automatic"
 }
