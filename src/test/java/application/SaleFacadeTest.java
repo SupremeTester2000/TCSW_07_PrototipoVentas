@@ -13,8 +13,10 @@ import org.junit.jupiter.api.Test;
 import com.example.application.facade.SaleFacade;
 import com.example.domain.model.Product;
 import com.example.domain.model.Sale;
+import com.example.domain.observer.SaleConfirmedPublisher;
 import com.example.ports.inbound.ProcessSaleUseCase;
 import com.example.ports.inbound.SaleFacadePort;
+import com.example.ports.outbound.TransactionPort;
 
 class SaleFacadeTest {
 
@@ -129,6 +131,55 @@ class SaleFacadeTest {
         Sale result = facade.processSale(request);
 
         assertSame(expectedSale, result);
+    }
+
+    @Test
+    void processSale_should_wrap_persistence_and_observers_in_one_transaction() {
+        boolean[] transactionActive = { false };
+        boolean[] persistenceWasTransactional = { false };
+        boolean[] observerWasTransactional = { false };
+        Sale sale = new Sale();
+        ProcessSaleUseCase useCase = new ProcessSaleUseCase() {
+            @Override
+            public void registerProduct(Product product) {
+            }
+
+            @Override
+            public Sale createSale(Map<String, Integer> products) {
+                return sale;
+            }
+
+            @Override
+            public void confirmSale(Sale sale) {
+            }
+
+            @Override
+            public Sale processSale(Map<String, Integer> requestedProducts) {
+                persistenceWasTransactional[0] = transactionActive[0];
+                return sale;
+            }
+        };
+        SaleConfirmedPublisher publisher = new SaleConfirmedPublisher();
+        publisher.registerObserver(event -> observerWasTransactional[0] = transactionActive[0]);
+        TransactionPort transactionPort = new TransactionPort() {
+            @Override
+            public <T> T execute(java.util.function.Supplier<T> operation) {
+                transactionActive[0] = true;
+                try {
+                    return operation.get();
+                } finally {
+                    transactionActive[0] = false;
+                }
+            }
+        };
+
+        SaleFacade facade = new SaleFacade(useCase, publisher, transactionPort);
+
+        facade.processSale(new LinkedHashMap<>());
+
+        assertTrue(persistenceWasTransactional[0]);
+        assertTrue(observerWasTransactional[0]);
+        assertTrue(!transactionActive[0]);
     }
 
     @Test
