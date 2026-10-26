@@ -110,3 +110,30 @@ El esquema respeta los tipos y restricciones del diagrama. `captured_price` pres
 - Cada operación de escritura usa transacción y hace rollback ante error; los errores de Hibernate/JDBC se traducen antes de salir del adaptador.
 - Las consultas usan parámetros; ninguna capa de dominio/aplicación/puertos depende de Hibernate, JDBC o PostgreSQL.
 - `mvn clean test` continúa pasando; `HibernatePersistenceIntegrationTest` comprueba persistencia, precio histórico y rollback con PostgreSQL cuando se habilita explícitamente mediante `RUN_POSTGRES_INTEGRATION=true`.
+
+## Ejecución local de PostgreSQL
+
+La opción recomendada para iniciar la base es Docker Compose. Copia `.env.example` como `.env`, configura
+una contraseña local y ejecuta:
+
+```bash
+docker compose up -d
+docker compose ps
+```
+
+Compose monta `src/main/resources/db/schema.sql` y `dev-seed.sql` en el directorio de inicialización de
+PostgreSQL. Esos scripts se ejecutan cuando se crea el volumen por primera vez. El volumen nombrado se
+comparte con `scripts/postgres.sh`, que ofrece `up`, `down` y `reset` como alternativa de uso.
+
+Para detener el servicio sin perder datos:
+
+```bash
+docker compose down
+```
+
+Para reinicializar el esquema y eliminar los datos persistidos:
+
+```bash
+docker compose down -v
+docker compose up -d
+```

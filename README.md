@@ -22,9 +22,17 @@ volumen por primera vez. `.env` está ignorado por Git; cambia la contraseña de
 ```bash
 cp .env.example .env
 # Edita POSTGRES_PASSWORD en .env antes de iniciar.
-sh scripts/postgres.sh up
+docker compose up -d
+docker compose ps
+```
 
-# Exporta los valores para que Hibernate se conecte desde esta terminal.
+Compose ejecuta PostgreSQL 16.15 y conserva los datos en un volumen nombrado. Como alternativa, el
+script `scripts/postgres.sh` ofrece los comandos `up`, `down` y `reset`, usando el mismo volumen y
+los mismos scripts SQL.
+
+Exporta los valores para que Hibernate se conecte desde esta terminal:
+
+```bash
 set -a
 . ./.env
 set +a
@@ -47,9 +55,11 @@ exportadas las variables `DB_URL`, `DB_USER` y `DB_PASSWORD` en la misma termina
 RUN_POSTGRES_INTEGRATION=true ./mvnw -Dtest=HibernatePersistenceIntegrationTest test
 ```
 
-`sh scripts/postgres.sh down` elimina el contenedor y conserva los datos. `sh scripts/postgres.sh up`
-lo vuelve a iniciar. Para recrear la base desde cero, ejecuta `sh scripts/postgres.sh reset`; **esto
-elimina el volumen y todos sus datos**, y vuelve a aplicar schema y datos de demostración.
+`docker compose down` detiene y elimina el contenedor, pero conserva el volumen. Para recrear la base
+desde cero, ejecuta `docker compose down -v` y después `docker compose up -d`; **esto elimina el
+volumen y todos sus datos** y vuelve a aplicar el esquema y los datos de demostración. También se puede
+usar `sh scripts/postgres.sh down` para retirar el contenedor, `up` para iniciarlo y `reset` para
+eliminar el volumen y recrear la base.
 
 ## Documentación
 
