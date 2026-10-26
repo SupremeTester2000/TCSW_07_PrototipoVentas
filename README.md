@@ -1,29 +1,58 @@
-# Sistema de gestión de Ventas - Tecnologías para la construcción de software
+# Prototipo Ventas
 
-**Java JDK:** 11
-**Apache Maven:** 3.9.16
+Aplicación de escritorio para gestionar productos y ventas. Usa Java 11, Swing, arquitectura
+hexagonal, Hibernate ORM y PostgreSQL 16.15.
 
-## Estructura del Dominio
-**Product** representa un artículo; **SaleDetail** captura el precio histórico y cantidad; **Sale** calcula subtotal, descuento, IVA y total final delegando las políticas a estrategias.
+## Dominio y persistencia
 
-Las políticas clásicas de descuento (`DiscountPercent` y `FixedDiscount`) implementan `DiscountStrategy`. También se ofrece la alternativa funcional `FunctionalDiscountPolicies`, que produce `Function<Sale, BigDecimal>`. La tasa de IVA, moneda base, límite de detalles y descuento máximo se administran mediante `SalesConfigurationSingleton`.
+`Product` representa un producto; `Sale` calcula subtotal, descuento, IVA y total; `SaleDetail` conserva
+el precio capturado al momento de la venta. Las políticas de descuento e impuestos se aplican mediante
+estrategias.
+
+Los adaptadores Hibernate están en `com.example.adapters.outbound.persistence`; dominio, casos de uso
+y puertos no dependen de Hibernate ni JDBC. El esquema y los datos de demostración están en
+`src/main/resources/db/`. La persistencia y el stock de una venta se confirman en una sola transacción.
 
 ## Ejecución
 
-Ejecuta la suite desde la raíz del proyecto:
+Requisitos: JDK 11 y Docker CLI con el daemon iniciado. Maven 3.9.16 se descarga automáticamente con
+el wrapper incluido. Prepara la base local; el schema y el producto de ejemplo se cargan al crear el
+volumen por primera vez. `.env` está ignorado por Git; cambia la contraseña de ejemplo antes de usarla.
+
 ```bash
-mvn clean test
+cp .env.example .env
+# Edita POSTGRES_PASSWORD en .env antes de iniciar.
+sh scripts/postgres.sh up
+
+# Exporta los valores para que Hibernate se conecte desde esta terminal.
+set -a
+. ./.env
+set +a
+export DB_URL="jdbc:postgresql://localhost:${POSTGRES_PORT}/${POSTGRES_DB}"
+export DB_USER="$POSTGRES_USER"
+export DB_PASSWORD="$POSTGRES_PASSWORD"
 ```
 
-La comparación de enfoques y el análisis crítico del Singleton están en [docs/analisis-patrones-ventas.md](docs/analisis-patrones-ventas.md).
+Inicia la interfaz o ejecuta la suite completa:
 
-## Calidad
+```bash
+./mvnw exec:java -Dexec.mainClass=com.Main
+./mvnw clean verify
+```
 
-Se sometió a una revisión de código con la herramienta SonarQube para el IDE Visual Studio Code.
+La suite normal no requiere PostgreSQL. Para ejecutar además la prueba de integración, mantén
+exportadas las variables `DB_URL`, `DB_USER` y `DB_PASSWORD` en la misma terminal:
 
----
-# Diagramas de clases del proyecto - Implementación de arquitectura hexagonal
+```bash
+RUN_POSTGRES_INTEGRATION=true ./mvnw -Dtest=HibernatePersistenceIntegrationTest test
+```
 
-[Diagrama UML actualizado de clases](docs/class-diagram.md) · [Fuente Mermaid](docs/class-diagram.mmd)
+`sh scripts/postgres.sh down` elimina el contenedor y conserva los datos. `sh scripts/postgres.sh up`
+lo vuelve a iniciar. Para recrear la base desde cero, ejecuta `sh scripts/postgres.sh reset`; **esto
+elimina el volumen y todos sus datos**, y vuelve a aplicar schema y datos de demostración.
 
-<img width="1600" height="1119" alt="image" src="https://github.com/user-attachments/assets/4ee72933-7313-4fce-aa67-d2d89fca0e6d" />
+## Documentación
+
+- [Propuesta del modelo relacional y plan Hibernate](docs/propuesta-persistencia-hibernate.md)
+- [Análisis de patrones de ventas](docs/analisis-patrones-ventas.md)
+- [Estilografía del proyecto](docs/estilografia.md).

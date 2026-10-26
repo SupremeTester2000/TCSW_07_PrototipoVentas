@@ -8,19 +8,28 @@ import com.example.domain.model.Sale;
 import com.example.domain.observer.SaleConfirmedPublisher;
 import com.example.ports.inbound.ProcessSaleUseCase;
 import com.example.ports.inbound.SaleFacadePort;
+import com.example.ports.outbound.TransactionPort;
 
 public class SaleFacade implements SaleFacadePort {
 
     private final ProcessSaleUseCase processSaleUseCase;
     private final SaleConfirmedPublisher saleConfirmedPublisher;
+    private final TransactionPort transactionPort;
 
     public SaleFacade(ProcessSaleUseCase processSaleUseCase) {
-        this(processSaleUseCase, new SaleConfirmedPublisher());
+        this(processSaleUseCase, new SaleConfirmedPublisher(), null);
     }
 
     public SaleFacade(
             ProcessSaleUseCase processSaleUseCase,
             SaleConfirmedPublisher saleConfirmedPublisher) {
+        this(processSaleUseCase, saleConfirmedPublisher, null);
+    }
+
+    public SaleFacade(
+            ProcessSaleUseCase processSaleUseCase,
+            SaleConfirmedPublisher saleConfirmedPublisher,
+            TransactionPort transactionPort) {
 
         if (processSaleUseCase == null) {
             throw new IllegalArgumentException(
@@ -34,15 +43,18 @@ public class SaleFacade implements SaleFacadePort {
 
         this.processSaleUseCase = processSaleUseCase;
         this.saleConfirmedPublisher = saleConfirmedPublisher;
+        this.transactionPort = transactionPort;
     }
 
     @Override
     public Sale processSale(Map<String, Integer> products) {
-        Sale sale = processSaleUseCase.processSale(products);
+        java.util.function.Supplier<Sale> operation = () -> {
+            Sale sale = processSaleUseCase.processSale(products);
+            saleConfirmedPublisher.publishSaleConfirmed(sale);
+            return sale;
+        };
 
-        saleConfirmedPublisher.publishSaleConfirmed(sale);
-
-        return sale;
+        return transactionPort == null ? operation.get() : transactionPort.execute(operation);
     }
 
     @Override
