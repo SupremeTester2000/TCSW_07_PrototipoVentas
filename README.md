@@ -17,6 +17,38 @@ mvn clean test
 
 La comparación de enfoques y el análisis crítico del Singleton están en [docs/analisis-patrones-ventas.md](docs/analisis-patrones-ventas.md).
 
+## Base de datos con PostgreSQL y Docker Compose
+
+Para levantar la infraestructura de PostgreSQL 16 del proyecto:
+
+```bash
+cp .env.example .env
+# ajusta la contraseña local
+
+docker compose up -d
+```
+
+Verifica el estado:
+
+```bash
+docker compose ps
+```
+
+Para detener la base:
+
+```bash
+docker compose down
+```
+
+Para recrearla desde cero eliminando datos persistidos:
+
+```bash
+docker compose down -v
+docker compose up -d
+```
+
+`compose.yaml` reutiliza el esquema de `src/main/resources/db/schema.sql` y el seed de desarrollo de `src/main/resources/db/dev-seed.sql`, usando el volumen persistente `postgres_data` y el healthcheck de `pg_isready`.
+
 ## Calidad
 
 Se sometió a una revisión de código con la herramienta SonarQube para el IDE Visual Studio Code.
