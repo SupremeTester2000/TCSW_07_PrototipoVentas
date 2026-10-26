@@ -8,14 +8,16 @@ import javax.swing.SwingUtilities;
 import com.example.adapters.inbound.swing.controller.ProductController;
 import com.example.adapters.inbound.swing.controller.CartController;
 import com.example.adapters.inbound.swing.view.ProductMainFrame;
-import com.example.adapters.outbound.InMemoryProductRepository;
-import com.example.adapters.outbound.InMemorySaleRepository;
+import com.example.adapters.outbound.persistence.HibernateProductRepository;
+import com.example.adapters.outbound.persistence.HibernateSaleRepository;
+import com.example.adapters.outbound.persistence.HibernateSessionFactory;
+import com.example.adapters.outbound.persistence.HibernateSessionManager;
+import com.example.adapters.outbound.persistence.HibernateTransactionAdapter;
 import com.example.application.facade.SaleFacade;
 import com.example.application.observer.StockUpdater;
 import com.example.application.service.ProcessSaleService;
 import com.example.domain.factory.DefaultSaleFactory;
 import com.example.domain.factory.SaleFactory;
-import com.example.domain.model.Product;
 import com.example.domain.observer.SaleConfirmedPublisher;
 import com.example.domain.strategy.FunctionalDiscountPolicies;
 import com.example.domain.strategy.VatTaxStrategy;
@@ -28,8 +30,12 @@ public class Main {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            ProductRepositoryPort productRepository = new InMemoryProductRepository();
-            SaleRepositoryPort saleRepository = new InMemorySaleRepository();
+            HibernateSessionFactory persistence = HibernateSessionFactory.fromEnvironment();
+            Runtime.getRuntime().addShutdownHook(new Thread(persistence::close));
+            HibernateSessionManager sessionManager = new HibernateSessionManager(
+                    persistence.getSessionFactory());
+            ProductRepositoryPort productRepository = new HibernateProductRepository(sessionManager);
+            SaleRepositoryPort saleRepository = new HibernateSaleRepository(sessionManager);
             SaleFactory saleFactory = new DefaultSaleFactory();
 
             ProcessSaleUseCase processSaleUseCase = new ProcessSaleService(
@@ -43,11 +49,12 @@ public class Main {
             StockUpdater stockUpdater = new StockUpdater(productRepository);
             saleConfirmedPublisher.registerObserver(stockUpdater);
 
-            SaleFacade saleFacade = new SaleFacade(processSaleUseCase, saleConfirmedPublisher);
+                SaleFacade saleFacade = new SaleFacade(
+                    processSaleUseCase,
+                    saleConfirmedPublisher,
+                    new HibernateTransactionAdapter(sessionManager));
             ProductController productController = new ProductController(saleFacade);
             CartController cartController = new CartController(saleFacade);
-            Product product = new Product("P001", "Producto de ejemplo", new BigDecimal("10.99"), 100);
-            saleFacade.registerProduct(product);
             productController.loadProducts();
 
             ProductMainFrame frame = new ProductMainFrame(productController, cartController);

@@ -47,4 +47,24 @@ class ArchitectureTest {
 
         rule.check(importer.importPackages("com.example"));
     }
+
+    @Test
+    void inner_layers_should_not_depend_on_hibernate_jdbc_or_postgresql() {
+        ArchRule rule = noClasses()
+                .that()
+                .resideInAnyPackage(
+                        "com.example.domain..",
+                        "com.example.application..",
+                        "com.example.ports..",
+                        "com.example.adapters.inbound..")
+                .should()
+                .dependOnClassesThat()
+                .resideInAnyPackage(
+                        "org.hibernate..",
+                        "jakarta.persistence..",
+                        "java.sql..",
+                        "org.postgresql..");
+
+        rule.check(importer.importPackages("com.example"));
+    }
 }

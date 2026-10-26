@@ -1,61 +1,68 @@
-# Sistema de gestión de Ventas - Tecnologías para la construcción de software
+# Prototipo Ventas
 
-**Java JDK:** 11
-**Apache Maven:** 3.9.16
+Aplicación de escritorio para gestionar productos y ventas. Usa Java 11, Swing, arquitectura
+hexagonal, Hibernate ORM y PostgreSQL 16.15.
 
-## Estructura del Dominio
-**Product** representa un artículo; **SaleDetail** captura el precio histórico y cantidad; **Sale** calcula subtotal, descuento, IVA y total final delegando las políticas a estrategias.
+## Dominio y persistencia
 
-Las políticas clásicas de descuento (`DiscountPercent` y `FixedDiscount`) implementan `DiscountStrategy`. También se ofrece la alternativa funcional `FunctionalDiscountPolicies`, que produce `Function<Sale, BigDecimal>`. La tasa de IVA, moneda base, límite de detalles y descuento máximo se administran mediante `SalesConfigurationSingleton`.
+`Product` representa un producto; `Sale` calcula subtotal, descuento, IVA y total; `SaleDetail` conserva
+el precio capturado al momento de la venta. Las políticas de descuento e impuestos se aplican mediante
+estrategias.
+
+Los adaptadores Hibernate están en `com.example.adapters.outbound.persistence`; dominio, casos de uso
+y puertos no dependen de Hibernate ni JDBC. El esquema y los datos de demostración están en
+`src/main/resources/db/`. La persistencia y el stock de una venta se confirman en una sola transacción.
 
 ## Ejecución
 
-Ejecuta la suite desde la raíz del proyecto:
-```bash
-mvn clean test
-```
-
-La comparación de enfoques y el análisis crítico del Singleton están en [docs/analisis-patrones-ventas.md](docs/analisis-patrones-ventas.md).
-
-## Base de datos con PostgreSQL y Docker Compose
-
-Para levantar la infraestructura de PostgreSQL 16 del proyecto:
+Requisitos: JDK 11 y Docker CLI con el daemon iniciado. Maven 3.9.16 se descarga automáticamente con
+el wrapper incluido. Prepara la base local; el schema y el producto de ejemplo se cargan al crear el
+volumen por primera vez. `.env` está ignorado por Git; cambia la contraseña de ejemplo antes de usarla.
 
 ```bash
 cp .env.example .env
-# ajusta la contraseña local
-
+# Edita POSTGRES_PASSWORD en .env antes de iniciar.
 docker compose up -d
-```
-
-Verifica el estado:
-
-```bash
 docker compose ps
 ```
 
-Para detener la base:
+Compose ejecuta PostgreSQL 16.15 y conserva los datos en un volumen nombrado. Como alternativa, el
+script `scripts/postgres.sh` ofrece los comandos `up`, `down` y `reset`, usando el mismo volumen y
+los mismos scripts SQL.
+
+Exporta los valores para que Hibernate se conecte desde esta terminal:
 
 ```bash
-docker compose down
+set -a
+. ./.env
+set +a
+export DB_URL="jdbc:postgresql://localhost:${POSTGRES_PORT}/${POSTGRES_DB}"
+export DB_USER="$POSTGRES_USER"
+export DB_PASSWORD="$POSTGRES_PASSWORD"
 ```
 
-Para recrearla desde cero eliminando datos persistidos:
+Inicia la interfaz o ejecuta la suite completa:
 
 ```bash
-docker compose down -v
-docker compose up -d
+./mvnw exec:java -Dexec.mainClass=com.Main
+./mvnw clean verify
 ```
 
-`compose.yaml` reutiliza el esquema de `src/main/resources/db/schema.sql` y el seed de desarrollo de `src/main/resources/db/dev-seed.sql`, usando el volumen persistente `postgres_data` y el healthcheck de `pg_isready`.
+La suite normal no requiere PostgreSQL. Para ejecutar además la prueba de integración, mantén
+exportadas las variables `DB_URL`, `DB_USER` y `DB_PASSWORD` en la misma terminal:
 
-## Calidad
+```bash
+RUN_POSTGRES_INTEGRATION=true ./mvnw -Dtest=HibernatePersistenceIntegrationTest test
+```
 
-Se sometió a una revisión de código con la herramienta SonarQube para el IDE Visual Studio Code.
+`docker compose down` detiene y elimina el contenedor, pero conserva el volumen. Para recrear la base
+desde cero, ejecuta `docker compose down -v` y después `docker compose up -d`; **esto elimina el
+volumen y todos sus datos** y vuelve a aplicar el esquema y los datos de demostración. También se puede
+usar `sh scripts/postgres.sh down` para retirar el contenedor, `up` para iniciarlo y `reset` para
+eliminar el volumen y recrear la base.
 
----
-# Diagramas de clases del proyecto - Implementación de arquitectura hexagonal
+## Documentación
 
-[Diagrama UML actualizado de clases](docs/class-diagram.md) · [Fuente Mermaid](docs/class-diagram.mmd)
-
-<img width="1600" height="1119" alt="image" src="https://github.com/user-attachments/assets/4ee72933-7313-4fce-aa67-d2d89fca0e6d" />
+- [Propuesta del modelo relacional y plan Hibernate](docs/propuesta-persistencia-hibernate.md)
+- [Análisis de patrones de ventas](docs/analisis-patrones-ventas.md)
+- [Estilografía del proyecto](docs/estilografia.md).
