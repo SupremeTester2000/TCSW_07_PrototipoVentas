@@ -15,9 +15,10 @@ y puertos no dependen de Hibernate ni JDBC. El esquema y los datos de demostraci
 
 ## Ejecución
 
-Requisitos: JDK 11 y Docker CLI con el daemon iniciado. Maven 3.9.16 se descarga automáticamente con
-el wrapper incluido. Prepara la base local; el schema y el producto de ejemplo se cargan al crear el
-volumen por primera vez. `.env` está ignorado por Git; cambia la contraseña de ejemplo antes de usarla.
+Requisitos: JDK 11, Docker CLI con el daemon iniciado y el complemento Docker Compose. Maven 3.9.16 se
+descarga automáticamente con el wrapper incluido. Prepara la base local; el esquema y el producto de
+ejemplo se cargan al crear el volumen por primera vez. `.env` está ignorado por Git; cambia la
+contraseña de ejemplo antes de usarla.
 
 ```bash
 cp .env.example .env
@@ -55,11 +56,25 @@ exportadas las variables `DB_URL`, `DB_USER` y `DB_PASSWORD` en la misma termina
 RUN_POSTGRES_INTEGRATION=true ./mvnw -Dtest=HibernatePersistenceIntegrationTest test
 ```
 
+Para verificar M11 con la suite completa y PostgreSQL:
+
+```bash
+sh scripts/verify-module.sh M11
+```
+
+El script valida Compose, inicia PostgreSQL si es necesario y ejecuta `clean verify` con las pruebas
+de integración habilitadas. No elimina ni reinicia el volumen. Si se requiere reconstruir la base
+desde cero, el reinicio elimina el volumen local y sus datos; úsalo solo si esos datos son
+descartables y luego vuelve a ejecutar la verificación:
+
+```bash
+CONFIRM_POSTGRES_RESET=prototipo-ventas-postgres-data sh scripts/postgres.sh reset
+```
+
 `docker compose down` detiene y elimina el contenedor, pero conserva el volumen. Para recrear la base
-desde cero, ejecuta `docker compose down -v` y después `docker compose up -d`; **esto elimina el
-volumen y todos sus datos** y vuelve a aplicar el esquema y los datos de demostración. También se puede
-usar `sh scripts/postgres.sh down` para retirar el contenedor, `up` para iniciarlo y `reset` para
-eliminar el volumen y recrear la base.
+desde cero, usa el comando de reinicio confirmado de arriba; este vuelve a aplicar el esquema y los
+datos de demostración. También se puede usar `sh scripts/postgres.sh down` para retirar el contenedor
+sin borrar datos, y `sh scripts/postgres.sh up` para iniciarlo.
 
 ## Documentación
 

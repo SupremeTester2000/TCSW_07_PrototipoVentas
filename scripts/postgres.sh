@@ -84,6 +84,13 @@ case "${1:-}" in
         printf '%s\n' 'Contenedor detenido; los datos del volumen se conservaron.'
         ;;
     reset)
+        if [ "${CONFIRM_POSTGRES_RESET:-}" != "$VOLUME_NAME" ]; then
+            printf 'Esto eliminará permanentemente el volumen %s y todos sus datos.\n' \
+                "$VOLUME_NAME" >&2
+            printf 'Para confirmar, ejecuta CONFIRM_POSTGRES_RESET=%s sh scripts/postgres.sh reset\n' \
+                "$VOLUME_NAME" >&2
+            exit 1
+        fi
         remove_container
         docker volume rm "$VOLUME_NAME" >/dev/null 2>&1 || true
         start_database
