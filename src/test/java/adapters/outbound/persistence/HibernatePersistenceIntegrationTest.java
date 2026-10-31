@@ -48,11 +48,7 @@ class HibernatePersistenceIntegrationTest {
     static void openSessionFactory() {
         persistence = HibernateSessionFactory.fromEnvironment();
 
-        sessionManager = new HibernateSessionManager(
-                persistence.getSessionFactory());
-
-        productRepository = new HibernateProductRepository(sessionManager);
-        saleRepository = new HibernateSaleRepository(sessionManager);
+        connectRepositories();
     }
 
     @AfterAll
@@ -112,10 +108,11 @@ class HibernatePersistenceIntegrationTest {
                 8);
 
         productRepository.save(original);
+        reopenSessionFactory();
 
         Product recovered = productRepository.findByCode(productCode)
                 .orElseThrow(() -> new AssertionError(
-                        "El producto guardado no fue encontrado."));
+                        "El producto guardado no sobrevivió al cierre y reapertura de SessionFactory."));
 
         assertEquals(original.getCode(), recovered.getCode());
         assertEquals(original.getName(), recovered.getName());
@@ -178,6 +175,7 @@ class HibernatePersistenceIntegrationTest {
                 productRepository.findByCode(productCode).get().getStock());
 
         assertEquals(0, countSalesForProduct());
+        assertEquals(0, countDetailsForProduct());
 
         SaleFacade successfulFacade = createFacade(false);
         Sale sale = successfulFacade.processSale(saleRequest);
@@ -225,6 +223,19 @@ class HibernatePersistenceIntegrationTest {
                 service,
                 publisher,
                 new HibernateTransactionAdapter(sessionManager));
+    }
+
+    private static void reopenSessionFactory() {
+        persistence.close();
+        persistence = HibernateSessionFactory.fromEnvironment();
+        connectRepositories();
+    }
+
+    private static void connectRepositories() {
+        sessionManager = new HibernateSessionManager(
+                persistence.getSessionFactory());
+        productRepository = new HibernateProductRepository(sessionManager);
+        saleRepository = new HibernateSaleRepository(sessionManager);
     }
 
     private long countSalesForProduct() {
