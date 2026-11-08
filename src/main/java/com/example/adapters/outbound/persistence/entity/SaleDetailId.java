@@ -3,8 +3,8 @@ package com.example.adapters.outbound.persistence.entity;
 import java.io.Serializable;
 import java.util.Objects;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 
 @Embeddable
 public class SaleDetailId implements Serializable {
