@@ -1,0 +1,337 @@
+
+openapi: 3.0.3
+
+info:
+  title: API Prototipo Ventas
+  description: Contrato HTTP de la API REST del sistema Prototipo Ventas.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Servidor local de desarrollo
+
+security: []
+
+tags:
+  - name: Productos
+    description: Operaciones para consultar, registrar y actualizar productos.
+  - name: Ventas
+    description: Operaciones para procesar ventas.
+
+paths:
+  /api/products:
+    get:
+      tags:
+        - Productos
+      summary: Consultar productos
+      operationId: listProducts
+      responses:
+        '200':
+          description: Lista de productos consultada correctamente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductResponse'
+              examples:
+                productos:
+                  value:
+                    - code: P00001
+                      name: Café
+                      price: 12.50
+                      stock: 4
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags:
+        - Productos
+      summary: Registrar un producto
+      operationId: registerProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRequest'
+            examples:
+              producto:
+                value:
+                  name: Café
+                  price: 12.50
+                  stock: 4
+      responses:
+        '201':
+          description: Producto registrado correctamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+              examples:
+                creado:
+                  value:
+                    code: P00001
+                    name: Café
+                    price: 12.50
+                    stock: 4
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/products/{code}:
+    put:
+      tags:
+        - Productos
+      summary: Actualizar un producto
+      operationId: updateProduct
+      parameters:
+        - name: code
+          in: path
+          required: true
+          description: Código del producto.
+          schema:
+            type: string
+            pattern: '^P[0-9]{5}$'
+            example: P00001
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRequest'
+            examples:
+              actualizacion:
+                value:
+                  name: Café actualizado
+                  price: 13.00
+                  stock: 5
+      responses:
+        '200':
+          description: Producto actualizado correctamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/sales:
+    post:
+      tags:
+        - Ventas
+      summary: Procesar una venta
+      operationId: processSale
+      description: >
+        Recibe un objeto JSON donde las claves son códigos de producto
+        y los valores representan las cantidades solicitadas.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaleRequest'
+            examples:
+              venta:
+                value:
+                  P00001: 2
+      responses:
+        '200':
+          description: Venta procesada correctamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaleResponse'
+              examples:
+                ventaProcesada:
+                  value:
+                    lines:
+                      - productCode: P00001
+                        productName: Café
+                        quantity: 2
+                        unitPrice: 12.50
+                        subtotal: 25.00
+                    subtotal: 25.00
+                    discount: 1.25
+                    taxes: 3.80
+                    total: 27.55
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    ProductRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - name
+        - price
+        - stock
+      properties:
+        name:
+          type: string
+          maxLength: 120
+          minLength: 1
+          pattern: '.*\S.*'
+          example: Café
+        price:
+          type: number
+          minimum: 0
+          maximum: 99999999.99
+          multipleOf: 0.01
+          example: 12.50
+        stock:
+          type: integer
+          minimum: 0
+          example: 4
+
+    ProductResponse:
+      type: object
+      required:
+        - code
+        - name
+        - price
+        - stock
+      properties:
+        code:
+          type: string
+          pattern: '^P[0-9]{5}$'
+          example: P00001
+        name:
+          type: string
+          example: Café
+        price:
+          type: number
+          example: 12.50
+        stock:
+          type: integer
+          example: 4
+
+    SaleRequest:
+      type: object
+      minProperties: 1
+      description: >
+        Las claves deben tener el formato P seguido de cinco dígitos.
+        Cada valor debe ser una cantidad entera positiva.
+      additionalProperties:
+        type: integer
+        minimum: 1
+      example:
+        P00001: 2
+
+    SaleResponse:
+      type: object
+      required:
+        - lines
+        - subtotal
+        - discount
+        - taxes
+        - total
+      properties:
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/SaleLine'
+        subtotal:
+          type: number
+          example: 25.00
+        discount:
+          type: number
+          example: 1.25
+        taxes:
+          type: number
+          example: 3.80
+        total:
+          type: number
+          example: 27.55
+
+    SaleLine:
+      type: object
+      required:
+        - productCode
+        - productName
+        - quantity
+        - unitPrice
+        - subtotal
+      properties:
+        productCode:
+          type: string
+          example: P00001
+        productName:
+          type: string
+          example: Café
+        quantity:
+          type: integer
+          example: 2
+        unitPrice:
+          type: number
+          example: 12.50
+        subtotal:
+          type: number
+          example: 25.00
+
+    ApiError:
+      type: object
+      required:
+        - title
+        - status
+        - detail
+      properties:
+        title:
+          type: string
+          example: Producto inexistente
+        status:
+          type: integer
+          example: 404
+        detail:
+          type: string
+          example: No se encontró el producto solicitado
+
+  responses:
+    BadRequest:
+      description: La solicitud contiene datos inválidos.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          examples:
+            validacion:
+              value:
+                title: Solicitud inválida
+                status: 400
+                detail: "Revise los siguientes campos: name, price"
+
+    NotFound:
+      description: No se encontró el producto solicitado.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          examples:
+            productoInexistente:
+              value:
+                title: Producto inexistente
+                status: 404
+                detail: No se encontró el producto solicitado
+
+    InternalServerError:
+      description: Ocurrió un error interno del servidor.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          examples:
+            errorInterno:
+              value:
+                title: Error interno del servidor
+                status: 500
+                detail: Ocurrió un error inesperado. Intente nuevamente más tarde
