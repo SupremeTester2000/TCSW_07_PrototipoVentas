@@ -11,6 +11,37 @@ La composición de dependencias se realiza en `com.example.config.SpringConfigur
 Los adaptadores Hibernate están en `com.example.adapters.outbound.persistence`. El esquema DDL y los registros de demostración se cargan desde `src/main/resources/db/schema.sql` y
 `src/main/resources/db/dev-seed.sql`. La confirmación del stock y la persistencia de la venta se resuelven en una misma transacción para mantener la consistencia del negocio.
 
+## API REST
+
+El adaptador REST expone los siguientes recursos. Sus DTOs son propios de `com.example.adapters.inbound.rest`; no expone entidades Hibernate ni modelos del dominio como JSON y delega las operaciones en `SaleFacadePort`.
+
+| Método y ruta | Descripción |
+|---|---|
+| `GET /api/products` | Lista productos como `ProductResponse`. |
+| `POST /api/products` | Registra un producto y devuelve `201 Created`. El cuerpo contiene `name`, `price` y `stock`; el código lo genera la aplicación. |
+| `PUT /api/products/{code}` | Actualiza el producto identificado por la ruta. El cuerpo contiene `name`, `price` y `stock`; no se acepta `code` en el cuerpo. |
+| `POST /api/sales` | Procesa una venta. Conserva el contrato de entrada como objeto JSON cuyas claves son códigos y cuyos valores son cantidades. |
+
+Ejemplo de alta de producto:
+
+```json
+{
+  "name": "Café",
+  "price": 12.50,
+  "stock": 4
+}
+```
+
+Ejemplo de solicitud de venta:
+
+```json
+{
+  "P00001": 2
+}
+```
+
+Los campos requeridos, formatos numéricos, códigos y cantidades se validan en la entrada HTTP. Las reglas de negocio, como la disponibilidad de stock, permanecen en el dominio y los casos de uso. Las solicitudes con estructura o formato inválidos responden con `400 Bad Request`.
+
 ## Requisitos y reproducibilidad
 
 Requisitos del entorno:
