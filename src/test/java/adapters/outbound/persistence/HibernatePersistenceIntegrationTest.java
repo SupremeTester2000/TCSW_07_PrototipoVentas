@@ -68,7 +68,7 @@ class HibernatePersistenceIntegrationTest {
     @AfterEach
     void removeTestData() {
         List<Long> saleIds = sessionManager.inTransaction(session -> session
-                .createSelectionQuery(
+                .createQuery(
                         "select distinct detail.sale.id from SaleDetailEntity detail "
                                 + "where detail.product.code = :code",
                         Long.class)
@@ -76,20 +76,20 @@ class HibernatePersistenceIntegrationTest {
                 .getResultList());
 
         sessionManager.inTransaction(session -> {
-            session.createMutationQuery(
+            session.createQuery(
                     "delete from SaleDetailEntity detail "
                             + "where detail.product.code = :code")
                     .setParameter("code", productCode)
                     .executeUpdate();
 
             if (!saleIds.isEmpty()) {
-                session.createMutationQuery(
+                session.createQuery(
                         "delete from SaleEntity sale where sale.id in :ids")
-                        .setParameterList("ids", saleIds)
+                        .setParameter("ids", saleIds)
                         .executeUpdate();
             }
 
-            session.createMutationQuery(
+            session.createQuery(
                     "delete from ProductEntity product "
                             + "where product.code = :code")
                     .setParameter("code", productCode)
@@ -132,7 +132,7 @@ class HibernatePersistenceIntegrationTest {
         PersistenceFailure failure = assertThrows(
                 PersistenceFailure.class,
                 () -> sessionManager.inTransaction(session -> session
-                        .createNativeMutationQuery(
+                .createNativeQuery(
                                 "INSERT INTO products "
                                         + "(code, name, price, stock) "
                                         + "VALUES "
@@ -240,7 +240,7 @@ class HibernatePersistenceIntegrationTest {
 
     private long countSalesForProduct() {
         return sessionManager.inTransaction(session -> session
-                .createSelectionQuery(
+                .createQuery(
                         "select count(distinct detail.sale.id) "
                                 + "from SaleDetailEntity detail "
                                 + "where detail.product.code = :code",
@@ -251,7 +251,7 @@ class HibernatePersistenceIntegrationTest {
 
     private long countDetailsForProduct() {
         return sessionManager.inTransaction(session -> session
-                .createSelectionQuery(
+                .createQuery(
                         "select count(detail) from SaleDetailEntity detail "
                                 + "where detail.product.code = :code",
                         Long.class)
@@ -261,7 +261,7 @@ class HibernatePersistenceIntegrationTest {
 
     private BigDecimal capturedPriceForProduct() {
         return sessionManager.inTransaction(session -> session
-                .createSelectionQuery(
+                .createQuery(
                         "select detail.capturedPrice "
                                 + "from SaleDetailEntity detail "
                                 + "where detail.product.code = :code",

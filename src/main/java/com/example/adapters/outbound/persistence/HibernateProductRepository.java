@@ -30,7 +30,7 @@ public final class HibernateProductRepository implements ProductRepositoryPort {
     @Override
     public Optional<Product> findByCode(String code) {
         return sessionManager.inTransaction(session -> session
-                .createSelectionQuery(
+                .createQuery(
                         "from ProductEntity product where product.code = :code",
                         ProductEntity.class)
                 .setParameter("code", code)
@@ -41,7 +41,7 @@ public final class HibernateProductRepository implements ProductRepositoryPort {
     @Override
     public List<Product> findAll() {
         return sessionManager.inTransaction(session -> session
-                .createSelectionQuery("from ProductEntity product order by product.code",
+                .createQuery("from ProductEntity product order by product.code",
                         ProductEntity.class)
                 .getResultList()
                 .stream()
