@@ -49,6 +49,18 @@ class ArchitectureTest {
     }
 
     @Test
+    void inbound_adapters_should_not_depend_on_outbound_adapters() {
+        ArchRule rule = noClasses()
+                .that()
+                .resideInAnyPackage("com.example.adapters.inbound..")
+                .should()
+                .dependOnClassesThat()
+                .resideInAnyPackage("com.example.adapters.outbound..");
+
+        rule.check(importer.importPackages("com.example"));
+    }
+
+    @Test
     void inner_layers_should_not_depend_on_hibernate_jdbc_or_postgresql() {
         ArchRule rule = noClasses()
                 .that()
