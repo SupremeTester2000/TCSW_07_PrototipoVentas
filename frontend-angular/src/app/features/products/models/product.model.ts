@@ -4,6 +4,15 @@ export interface ProductRequest {
   stock: number;
 }
 
-export interface Product extends ProductRequest {
+export interface ProductResponse {
   code: string;
+  name: string;
+  price: number;
+  stock: number;
 }
+
+/**
+ * Alias conservado para mantener compatibilidad
+ * con los componentes existentes.
+ */
+export type Product = ProductResponse;
