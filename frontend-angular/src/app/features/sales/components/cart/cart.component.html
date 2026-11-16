@@ -1,0 +1,23 @@
+<section class="panel" aria-labelledby="cart-title">
+  <h2 id="cart-title">Carrito</h2>
+  <app-state-message
+    *ngIf="items.length === 0"
+    [state]="state"
+    message="El carrito está vacío. Agrega productos con su código y cantidad."
+  ></app-state-message>
+
+  <ng-container *ngIf="items.length > 0">
+    <ul class="cart-list">
+      <li *ngFor="let item of items">
+        <span><strong>{{ item.productCode }}</strong><span> Cantidad: {{ item.quantity }}</span></span>
+        <button
+          class="button button-secondary"
+          type="button"
+          [attr.aria-label]="'Quitar producto ' + item.productCode + ' del carrito'"
+          (click)="remove(item.productCode)"
+        >Quitar</button>
+      </li>
+    </ul>
+    <button class="button button-primary" type="button" (click)="prepareSale()">Preparar venta</button>
+  </ng-container>
+</section>

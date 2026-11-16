@@ -1,0 +1,45 @@
+<section class="panel" aria-labelledby="sale-form-title">
+  <h2 id="sale-form-title">Agregar producto a la venta</h2>
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="form-field">
+      <label for="sale-product-code">Código de producto</label>
+      <input
+        id="sale-product-code"
+        type="text"
+        formControlName="productCode"
+        placeholder="P00001"
+        pattern="P[0-9]{5}"
+        maxlength="6"
+        autocapitalize="characters"
+        aria-describedby="sale-code-help sale-code-error"
+        [attr.aria-invalid]="form.controls.productCode.touched && form.controls.productCode.invalid"
+      />
+      <small id="sale-code-help" class="field-help">Formato: P seguido de cinco dígitos.</small>
+      <small id="sale-code-error" class="field-error" aria-live="polite">
+        <ng-container *ngIf="form.controls.productCode.touched && form.controls.productCode.hasError('required')">El código de producto es obligatorio.</ng-container>
+        <ng-container *ngIf="form.controls.productCode.touched && form.controls.productCode.hasError('pattern')">Usa el formato P00001 (P y cinco dígitos).</ng-container>
+      </small>
+    </div>
+
+    <div class="form-field">
+      <label for="sale-quantity">Cantidad</label>
+      <input
+        id="sale-quantity"
+        type="number"
+        formControlName="quantity"
+        min="1"
+        step="1"
+        inputmode="numeric"
+        aria-describedby="sale-quantity-error"
+        [attr.aria-invalid]="form.controls.quantity.touched && form.controls.quantity.invalid"
+      />
+      <small id="sale-quantity-error" class="field-error" aria-live="polite">
+        <ng-container *ngIf="form.controls.quantity.touched && form.controls.quantity.hasError('required')">La cantidad es obligatoria.</ng-container>
+        <ng-container *ngIf="form.controls.quantity.touched && form.controls.quantity.hasError('min')">La cantidad debe ser al menos 1.</ng-container>
+        <ng-container *ngIf="form.controls.quantity.touched && form.controls.quantity.hasError('integer')">La cantidad debe ser un número entero.</ng-container>
+      </small>
+    </div>
+
+    <button class="button button-primary" type="submit">Agregar al carrito</button>
+  </form>
+</section>

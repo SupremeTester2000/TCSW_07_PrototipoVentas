@@ -1,0 +1,13 @@
+<p
+  *ngIf="message"
+  class="state-message"
+  [class.state-success]="state === 'success'"
+  [class.state-error]="state === 'error'"
+  [class.state-loading]="state === 'loading'"
+  [class.state-empty]="state === 'empty'"
+  [attr.role]="state === 'error' ? 'alert' : 'status'"
+  [attr.aria-live]="state === 'error' ? 'assertive' : 'polite'"
+>
+  <span class="state-label" *ngIf="state === 'loading'">Cargando: </span>
+  {{ message }}
+</p>

@@ -1,0 +1,30 @@
+<section class="panel" aria-labelledby="products-list-title">
+  <h2 id="products-list-title">Catálogo</h2>
+  <app-state-message
+    *ngIf="products.length === 0"
+    [state]="state"
+    message="No hay productos para mostrar. La consulta del catálogo se integrará posteriormente."
+  ></app-state-message>
+
+  <div class="table-wrap" *ngIf="products.length > 0">
+    <table>
+      <caption>Productos disponibles</caption>
+      <thead>
+        <tr>
+          <th scope="col">Código</th>
+          <th scope="col">Nombre</th>
+          <th scope="col">Precio</th>
+          <th scope="col">Stock</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of products">
+          <td>{{ product.code }}</td>
+          <td>{{ product.name }}</td>
+          <td>{{ product.price | number: '1.2-2' }}</td>
+          <td>{{ product.stock }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>

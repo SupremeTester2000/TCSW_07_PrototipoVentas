@@ -1,0 +1,23 @@
+.state-message {
+  border-left: 0.25rem solid #6b7280;
+  border-radius: 0.25rem;
+  color: #1f2937;
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+}
+
+.state-empty,
+.state-loading {
+  background: #e5e7eb;
+  border-left-color: #f59e0b;
+}
+
+.state-success {
+  background: #d1fae5;
+  border-left-color: #10b981;
+}
+
+.state-error {
+  background: #fee2e2;
+  border-left-color: #ef4444;
+}

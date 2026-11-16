@@ -1,0 +1,18 @@
+<main class="page">
+  <header class="page-heading">
+    <p class="eyebrow">Inventario</p>
+    <h1>Productos</h1>
+    <p>Consulta el catálogo y prepara el registro de productos.</p>
+  </header>
+
+  <app-state-message
+    *ngIf="formMessage"
+    [state]="formState"
+    [message]="formMessage"
+  ></app-state-message>
+
+  <div class="products-layout">
+    <app-product-form (productPrepared)="onProductPrepared($event)"></app-product-form>
+    <app-product-list [products]="products" [state]="listState"></app-product-list>
+  </div>
+</main>
