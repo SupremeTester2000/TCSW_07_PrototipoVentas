@@ -1,8 +1,9 @@
+
 <main class="page">
   <header class="page-heading">
     <p class="eyebrow">Inventario</p>
     <h1>Productos</h1>
-    <p>Consulta el catálogo y prepara el registro de productos.</p>
+    <p>Consulta el catálogo y registra nuevos productos.</p>
   </header>
 
   <app-state-message
@@ -10,24 +11,15 @@
     [state]="formState"
     [message]="formMessage"
   ></app-state-message>
-  <app-state-message
-    *ngIf="saleMessage"
-    [state]="saleState"
-    [message]="saleMessage"
-  ></app-state-message>
 
   <div class="products-layout">
-    <app-product-form (productPrepared)="onProductPrepared($event)"></app-product-form>
+    <app-product-form
+      (productPrepared)="onProductPrepared($event)"
+    ></app-product-form>
+
     <app-product-list
       [products]="products"
       [state]="listState"
-      (productSelected)="addProduct($event)"
     ></app-product-list>
-    <app-cart
-      [items]="items"
-      (quantityChanged)="updateCartItem($event)"
-      (itemRemoved)="removeCartItem($event)"
-      (salePrepared)="onSalePrepared($event)"
-    ></app-cart>
   </div>
 </main>

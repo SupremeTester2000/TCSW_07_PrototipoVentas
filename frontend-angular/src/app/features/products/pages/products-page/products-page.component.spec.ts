@@ -1,3 +1,4 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 
@@ -20,8 +21,10 @@ describe('ProductsPageComponent', () => {
         CartComponent,
         StateMessageComponent
       ],
-      imports: [ReactiveFormsModule]
-    });
+      imports: [
+  ReactiveFormsModule,
+  HttpClientTestingModule
+]});
     fixture = TestBed.createComponent(ProductsPageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
