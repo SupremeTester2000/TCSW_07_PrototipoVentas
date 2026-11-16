@@ -1,0 +1,40 @@
+.page {
+  margin: 0 auto;
+  max-width: 72rem;
+  padding: 2rem 1.25rem 3rem;
+}
+
+.page-heading {
+  margin-bottom: 1.5rem;
+}
+
+.page-heading h1 {
+  color: #1f2937;
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  margin: 0.25rem 0;
+}
+
+.page-heading p {
+  color: #6b7280;
+  margin: 0;
+}
+
+.page-heading .eyebrow {
+  color: #6c3eb8;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.sales-layout {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 48rem) {
+  .sales-layout {
+    grid-template-columns: 1fr;
+  }
+}

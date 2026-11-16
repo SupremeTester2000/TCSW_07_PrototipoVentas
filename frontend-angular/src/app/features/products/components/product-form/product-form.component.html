@@ -1,0 +1,68 @@
+<section class="panel" aria-labelledby="product-form-title">
+  <h2 id="product-form-title">Registrar producto</h2>
+  <p class="form-intro">Completa los datos para preparar un producto.</p>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="form-field">
+      <label for="product-name">Nombre</label>
+      <input
+        id="product-name"
+        type="text"
+        formControlName="name"
+        maxlength="120"
+        autocomplete="off"
+        aria-describedby="product-name-help product-name-error"
+        [attr.aria-invalid]="form.controls.name.touched && form.controls.name.invalid"
+      />
+      <small id="product-name-help" class="field-help">Máximo 120 caracteres.</small>
+      <small id="product-name-error" class="field-error" aria-live="polite">
+        <ng-container *ngIf="form.controls.name.touched && form.controls.name.hasError('required')">El nombre es obligatorio.</ng-container>
+        <ng-container *ngIf="form.controls.name.touched && form.controls.name.hasError('pattern')">El nombre no puede contener solo espacios.</ng-container>
+        <ng-container *ngIf="form.controls.name.touched && form.controls.name.hasError('maxlength')">El nombre no puede superar 120 caracteres.</ng-container>
+      </small>
+    </div>
+
+    <div class="form-field">
+      <label for="product-price">Precio</label>
+      <input
+        id="product-price"
+        type="number"
+        formControlName="price"
+        min="0"
+        max="99999999.99"
+        step="0.01"
+        inputmode="decimal"
+        aria-describedby="product-price-help product-price-error"
+        [attr.aria-invalid]="form.controls.price.touched && form.controls.price.invalid"
+      />
+      <small id="product-price-help" class="field-help">Debe estar entre 0 y 99,999,999.99, con hasta dos decimales.</small>
+      <small id="product-price-error" class="field-error" aria-live="polite">
+        <ng-container *ngIf="form.controls.price.touched && form.controls.price.hasError('required')">El precio es obligatorio.</ng-container>
+        <ng-container *ngIf="form.controls.price.touched && form.controls.price.hasError('min')">El precio no puede ser negativo.</ng-container>
+        <ng-container *ngIf="form.controls.price.touched && form.controls.price.hasError('max')">El precio no puede superar 99,999,999.99.</ng-container>
+        <ng-container *ngIf="form.controls.price.touched && form.controls.price.hasError('multipleOf')">El precio debe tener como máximo dos decimales.</ng-container>
+      </small>
+    </div>
+
+    <div class="form-field">
+      <label for="product-stock">Stock</label>
+      <input
+        id="product-stock"
+        type="number"
+        formControlName="stock"
+        min="0"
+        step="1"
+        inputmode="numeric"
+        aria-describedby="product-stock-error"
+        [attr.aria-invalid]="form.controls.stock.touched && form.controls.stock.invalid"
+      />
+      <small id="product-stock-error" class="field-error" aria-live="polite">
+        <ng-container *ngIf="form.controls.stock.touched && form.controls.stock.hasError('required')">El stock es obligatorio.</ng-container>
+        <ng-container *ngIf="form.controls.stock.touched && form.controls.stock.hasError('min')">El stock no puede ser negativo.</ng-container>
+        <ng-container *ngIf="form.controls.stock.touched && form.controls.stock.hasError('integer')">El stock debe ser un número entero.</ng-container>
+      </small>
+    </div>
+
+    <button class="button button-primary" type="submit">Preparar producto</button>
+  </form>
+</section>

@@ -1,6 +1,6 @@
 # Prototipo Ventas
 
-Aplicación de gestión de productos y ventas con Java 11, Spring Boot 2.7.18, Swing como cliente visual legado, arquitectura hexagonal, Hibernate ORM y PostgreSQL 16.15. El proyecto mantiene la separación entre dominio, casos de uso, puertos y adaptadores, y añade Spring Boot como infraestructura externa de ejecución, configuración e inyección de dependencias.
+Aplicación de gestión de productos y ventas con un backend Java 11 / Spring Boot 2.7.18 y un cliente web Angular 16. Swing se conserva como cliente visual legado. El backend usa arquitectura hexagonal, Hibernate ORM y PostgreSQL 16.15; mantiene la separación entre dominio, casos de uso, puertos y adaptadores.
 
 ## Arquitectura y capa de persistencia
 
@@ -42,11 +42,44 @@ Ejemplo de solicitud de venta:
 
 Los campos requeridos, formatos numéricos, códigos y cantidades se validan en la entrada HTTP. Las reglas de negocio, como la disponibilidad de stock, permanecen en el dominio y los casos de uso. Las solicitudes con estructura o formato inválidos responden con `400 Bad Request`.
 
+## Cliente web Angular
+
+El cliente web está en `frontend-angular/` y utiliza:
+
+- Angular 16.2.12 y Angular CLI 16.2.16.
+- TypeScript 5.1.6 y RxJS 7.8.2.
+- Formularios reactivos (`ReactiveFormsModule`) y Angular Router.
+- Node.js 18.20.8 para desarrollo y compilación.
+
+La aplicación conserva la arquitectura basada en `AppModule` y `AppRoutingModule`, con páginas y componentes presentacionales organizados por funcionalidad. Las rutas principales son `/products` y `/sales`. El formulario de productos valida los campos del contrato OpenAPI; el formulario de ventas prepara códigos y cantidades para el carrito. Este incremento todavía no realiza solicitudes HTTP: las operaciones se preparan localmente y no requieren que el backend o PostgreSQL estén iniciados.
+
+La guía visual del cliente se encuentra en [docs/estilografia.md](docs/estilografia.md), y el contrato de datos de la API en [docs/openapi.yaml](docs/openapi.yaml).
+
+### Reproducir el cliente web
+
+Requisitos: Node.js 18.20.8 y npm. Desde la raíz del repositorio:
+
+```bash
+cd frontend-angular
+npm ci
+npm start
+```
+
+Abre <http://localhost:4200/>. La ruta inicial redirige a productos; la navegación permite cambiar entre productos y ventas. No se requiere configuración de base de datos para probar estas vistas y formularios.
+
+Para compilar la aplicación y ejecutar las pruebas unitarias con Chrome Headless (se requiere Chrome o Chromium compatible instalado):
+
+```bash
+npm run build
+npm test -- --watch=false --browsers=ChromeHeadless
+```
+
 ## Requisitos y reproducibilidad
 
 Requisitos del entorno:
 
 - JDK 11
+- Node.js 18.20.8 y npm (para el cliente web Angular; ver la guía anterior)
 - Docker CLI con el daemon activo
 - Docker Compose
 - Maven 3.x o el wrapper incluido (`mvnw`/`mvnw.cmd`)

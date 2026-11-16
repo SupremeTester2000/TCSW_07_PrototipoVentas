@@ -1,0 +1,22 @@
+<main class="page">
+  <header class="page-heading">
+    <p class="eyebrow">Punto de venta</p>
+    <h1>Ventas</h1>
+    <p>Prepara una venta agregando productos por código y cantidad.</p>
+  </header>
+
+  <app-state-message
+    *ngIf="saleMessage"
+    [state]="saleState"
+    [message]="saleMessage"
+  ></app-state-message>
+
+  <div class="sales-layout">
+    <app-sale-form (itemPrepared)="addItem($event)"></app-sale-form>
+    <app-cart
+      [items]="items"
+      (itemRemoved)="removeItem($event)"
+      (salePrepared)="onSalePrepared($event)"
+    ></app-cart>
+  </div>
+</main>
