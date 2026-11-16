@@ -14,7 +14,8 @@
           <th scope="col">Código</th>
           <th scope="col">Nombre</th>
           <th scope="col">Precio</th>
-          <th scope="col">Stock</th>
+          <th scope="col">Existencia</th>
+          <th scope="col">Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -23,6 +24,15 @@
           <td>{{ product.name }}</td>
           <td>{{ product.price | number: '1.2-2' }}</td>
           <td>{{ product.stock }}</td>
+          <td>
+            <button
+              class="button button-primary"
+              type="button"
+              [disabled]="product.stock === 0"
+              [attr.aria-label]="'Agregar ' + product.name + ' al carrito'"
+              (click)="addToCart(product)"
+            >Agregar</button>
+          </td>
         </tr>
       </tbody>
     </table>

@@ -10,9 +10,24 @@
     [state]="formState"
     [message]="formMessage"
   ></app-state-message>
+  <app-state-message
+    *ngIf="saleMessage"
+    [state]="saleState"
+    [message]="saleMessage"
+  ></app-state-message>
 
   <div class="products-layout">
     <app-product-form (productPrepared)="onProductPrepared($event)"></app-product-form>
-    <app-product-list [products]="products" [state]="listState"></app-product-list>
+    <app-product-list
+      [products]="products"
+      [state]="listState"
+      (productSelected)="addProduct($event)"
+    ></app-product-list>
+    <app-cart
+      [items]="items"
+      (quantityChanged)="updateCartItem($event)"
+      (itemRemoved)="removeCartItem($event)"
+      (salePrepared)="onSalePrepared($event)"
+    ></app-cart>
   </div>
 </main>
