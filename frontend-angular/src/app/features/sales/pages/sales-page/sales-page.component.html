@@ -15,6 +15,7 @@
     <app-sale-form (itemPrepared)="addItem($event)"></app-sale-form>
     <app-cart
       [items]="items"
+      (quantityChanged)="updateItemQuantity($event)"
       (itemRemoved)="removeItem($event)"
       (salePrepared)="onSalePrepared($event)"
     ></app-cart>

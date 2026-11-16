@@ -28,4 +28,12 @@ describe('SalesPageComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('updates item quantities from the cart', () => {
+    component.items = [{ productCode: 'P00001', quantity: 1 }];
+
+    component.updateItemQuantity({ productCode: 'P00001', quantity: 4 });
+
+    expect(component.items).toEqual([{ productCode: 'P00001', quantity: 4 }]);
+  });
 });

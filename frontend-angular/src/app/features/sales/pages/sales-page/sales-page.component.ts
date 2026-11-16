@@ -25,6 +25,19 @@ export class SalesPageComponent {
     this.preparedSale = null;
   }
 
+  updateItemQuantity(updatedItem: SaleItem): void {
+    if (!Number.isInteger(updatedItem.quantity) || updatedItem.quantity <= 0) {
+      return;
+    }
+
+    this.items = this.items.map((item) => (
+      item.productCode === updatedItem.productCode ? updatedItem : item
+    ));
+    this.saleState = 'idle';
+    this.saleMessage = '';
+    this.preparedSale = null;
+  }
+
   removeItem(productCode: string): void {
     this.items = this.items.filter((item) => item.productCode !== productCode);
     this.saleState = 'idle';

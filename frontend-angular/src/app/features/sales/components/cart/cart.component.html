@@ -7,9 +7,27 @@
   ></app-state-message>
 
   <ng-container *ngIf="items.length > 0">
+    <p class="cart-summary" aria-live="polite">
+      {{ items.length }} producto(s) seleccionado(s), {{ totalQuantity }} unidad(es) en total.
+    </p>
     <ul class="cart-list">
       <li *ngFor="let item of items">
-        <span><strong>{{ item.productCode }}</strong><span> Cantidad: {{ item.quantity }}</span></span>
+        <div class="cart-item-details">
+          <strong>{{ item.productCode }}</strong>
+          <label>
+            Cantidad
+            <input
+              #quantityInput
+              type="number"
+              min="1"
+              step="1"
+              required
+              [value]="item.quantity"
+              [attr.aria-label]="'Cantidad de ' + item.productCode"
+              (change)="updateQuantity(item, quantityInput.valueAsNumber, quantityInput)"
+            />
+          </label>
+        </div>
         <button
           class="button button-secondary"
           type="button"

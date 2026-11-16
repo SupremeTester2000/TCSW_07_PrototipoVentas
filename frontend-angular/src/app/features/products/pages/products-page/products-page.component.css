@@ -33,6 +33,10 @@
   grid-template-columns: minmax(17rem, 0.8fr) minmax(20rem, 1.2fr);
 }
 
+.products-layout app-cart {
+  grid-column: 1 / -1;
+}
+
 @media (max-width: 48rem) {
   .products-layout {
     grid-template-columns: 1fr;
